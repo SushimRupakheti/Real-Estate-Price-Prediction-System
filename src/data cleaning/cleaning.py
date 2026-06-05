@@ -285,3 +285,10 @@ print("\nLOCATION encoding sample:")
 print(data[["LOCATION", "LOCATION_ENCODED"]].head(10))
 
 print("\nMissing LOCATION encoding:", data["LOCATION_ENCODED"].isna().sum())
+
+data.to_csv(
+    r"C:\Users\ASUS\Desktop\prediction_model\data\processed\cleaned_house_data.csv",
+    index=False
+)
+
+print("\nCleaned dataset saved successfully!")
