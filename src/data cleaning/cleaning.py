@@ -286,9 +286,33 @@ print(data[["LOCATION", "LOCATION_ENCODED"]].head(10))
 
 print("\nMissing LOCATION encoding:", data["LOCATION_ENCODED"].isna().sum())
 
+# ==========================
+# MISSING VALUES insertion
+# ==========================
+
+data["LAND AREA (sqft)"] = data["LAND AREA (sqft)"].fillna(
+    data["LAND AREA (sqft)"].median()
+)
+
+
+# ==========================
+# MISSING columns deletion
+# ==========================
+data.drop(columns=["PARKING"], inplace=True)
+data.drop(columns=["ROAD ACCESS"], inplace=True)
+
+print("\nAFTER FINAL CLEANING")
+print(data.isnull().sum())
+
 data.to_csv(
     r"C:\Users\ASUS\Desktop\prediction_model\data\processed\cleaned_house_data.csv",
     index=False
 )
 
 print("\nCleaned dataset saved successfully!")
+
+print("\nFINAL SHAPE:")
+print(data.shape)
+
+print("\nFINAL COLUMNS:")
+print(data.columns.tolist())

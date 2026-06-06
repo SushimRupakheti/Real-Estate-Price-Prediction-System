@@ -21,3 +21,6 @@ print(corr["PRICE"].sort_values(ascending=False))
 
 print("\nMISSING VALUES CHECK")
 print(df.isnull().sum())
+
+
+
