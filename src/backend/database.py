@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 
-from sqlalchemy import Column, DateTime, Float, Integer, create_engine
+from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -29,9 +29,22 @@ class Prediction(Base):
     has_garden = Column(Integer)
     has_modular_kitchen = Column(Integer)
     location_encoded = Column(Float)
+    location_label = Column(String)
     facing_encoded = Column(Integer)
     predicted_price = Column(Float)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
 Base.metadata.create_all(bind=engine)
+
+
+def _ensure_location_label_column():
+    with engine.connect() as connection:
+        columns = connection.execute(text("PRAGMA table_info(predictions)")).fetchall()
+        column_names = {column[1] for column in columns}
+        if "location_label" not in column_names:
+            connection.execute(text("ALTER TABLE predictions ADD COLUMN location_label VARCHAR"))
+            connection.commit()
+
+
+_ensure_location_label_column()

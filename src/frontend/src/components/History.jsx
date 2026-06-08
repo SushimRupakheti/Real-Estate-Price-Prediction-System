@@ -3,14 +3,31 @@ import axios from "axios";
 
 export default function History() {
   const [history, setHistory] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/history")
-      .then((res) => setHistory(res.data))
-      .catch(() => setHistory([]))
+    // Fetch both history and locations in parallel
+    Promise.all([
+      axios.get("http://127.0.0.1:8000/history").then((r) => r.data).catch(() => []),
+      axios.get("http://127.0.0.1:8000/locations").then((r) => r.data).catch(() => []),
+    ])
+      .then(([historyData, locationsData]) => {
+        setHistory(historyData);
+        setLocations(locationsData);
+      })
+      .catch(() => {
+        setHistory([]);
+        setLocations([]);
+      })
       .finally(() => setLoading(false));
   }, []);
+
+  const lookupLocationLabel = (encoded) => {
+    if (!encoded || locations.length === 0) return null;
+    const found = locations.find((l) => Number(l.value) === Number(encoded));
+    return found ? found.label : null;
+  };
 
   return (
     <div>
@@ -28,6 +45,7 @@ export default function History() {
             <thead className="bg-blue-700 text-white">
               <tr>
                 <th className="px-4 py-3">#</th>
+                <th className="px-4 py-3">Location</th>
                 <th className="px-4 py-3">Bedrooms</th>
                 <th className="px-4 py-3">Bathrooms</th>
                 <th className="px-4 py-3">Floor</th>
@@ -40,6 +58,7 @@ export default function History() {
               {history.map((item, index) => (
                 <tr key={item.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                   <td className="px-4 py-3">{item.id}</td>
+                  <td className="px-4 py-3">{item.location_label || lookupLocationLabel(item.location_encoded) || "N/A"}</td>
                   <td className="px-4 py-3">{item.bedroom}</td>
                   <td className="px-4 py-3">{item.bathroom}</td>
                   <td className="px-4 py-3">{item.floor}</td>

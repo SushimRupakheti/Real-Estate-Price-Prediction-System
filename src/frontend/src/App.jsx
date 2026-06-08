@@ -42,7 +42,7 @@ export default function App() {
 
       {/* FOOTER */}
       <footer className="text-center text-sm text-gray-400 py-4 border-t mt-8">
-        Made with ❤️ for better real estate decisions.
+        Made for better real estate decisions.
       </footer>
     </div>
   );

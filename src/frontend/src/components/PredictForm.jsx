@@ -32,6 +32,7 @@ export default function PredictForm() {
 
     const [locations, setLocations] = useState([]);
     const [locationSearch, setLocationSearch] = useState("");
+    const [selectedLocation, setSelectedLocation] = useState(null);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -66,6 +67,7 @@ export default function PredictForm() {
                 has_garden: form.has_garden,
                 has_modular_kitchen: form.has_modular_kitchen,
                 location_encoded: parseFloat(form.location_encoded),
+                location_label: selectedLocation?.label || locationSearch,
                 facing_encoded: parseInt(form.facing_encoded),
             };
             const response = await axios.post("http://127.0.0.1:8000/predict", payload);
@@ -74,7 +76,10 @@ export default function PredictForm() {
             setError("Prediction failed. Please check your inputs.");
         } finally {
             setLoading(false);
+            console.log("Location Encoded Being Sent:", form.location_encoded);
+            console.log("Location Label:", locationSearch);
         }
+
     };
 
     const filteredLocations = locations
@@ -89,10 +94,6 @@ export default function PredictForm() {
             if (!aL.startsWith(s) && bL.startsWith(s)) return 1;
             return aL.localeCompare(bL);
         });
-
-    const selectedLocation = locations.find(
-        (l) => l.value === parseFloat(form.location_encoded)
-    );
 
     return (
         <div>
@@ -131,6 +132,7 @@ export default function PredictForm() {
                                 onChange={(e) => {
                                     const val = e.target.value;
                                     setLocationSearch(val);
+                                    setSelectedLocation(null);
                                     setForm((prev) => ({ ...prev, location_encoded: "" }));
                                     setShowSuggestions(true);
                                 }}
@@ -141,10 +143,11 @@ export default function PredictForm() {
                                 <ul className="absolute z-10 bg-white border border-gray-200 rounded-lg shadow-lg w-full max-h-44 overflow-y-auto mt-1">
                                     {filteredLocations.map((loc) => (
                                         <li
-                                            key={loc.value}
+                                            key={loc.label}
                                             onClick={() => {
                                                 setForm((prev) => ({ ...prev, location_encoded: loc.value }));
                                                 setLocationSearch(loc.label);
+                                                setSelectedLocation(loc);
                                                 setShowSuggestions(false);
                                             }}
                                             className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700"
@@ -303,27 +306,55 @@ export default function PredictForm() {
                                 <div className="text-8xl">🏡</div>
                             </div>
 
-                            {/* Key Factors */}
+                            {/* Key Factors — Real SHAP Values */}
                             <div className="bg-white rounded-2xl shadow p-6">
-                                <h3 className="font-semibold text-gray-700 mb-4">Key Factors Influencing Price</h3>
-                                {[
-                                    { label: `Location (${selectedLocation?.label || ""})`, pct: 35 },
-                                    { label: `Land Area (${form.land_area} sq ft)`, pct: 25 },
-                                    { label: `Road Access (${form.road_access} ft)`, pct: 15 },
-                                    { label: `Property Age (${form.property_age} years)`, pct: 10 },
-                                    { label: "Amenities", pct: 15 },
-                                ].map((f) => (
-                                    <div key={f.label} className="flex items-center gap-3 mb-3">
-                                        <span className="text-sm text-gray-600 w-48">{f.label}</span>
-                                        <div className="flex-1 bg-gray-100 rounded-full h-2">
-                                            <div
-                                                className="bg-blue-600 h-2 rounded-full"
-                                                style={{ width: `${f.pct}%` }}
-                                            />
+                                <h3 className="font-semibold text-gray-700 mb-4">
+                                    Key Factors Influencing Price
+                                    <span className="text-xs text-gray-400 font-normal ml-2">(powered by SHAP)</span>
+                                </h3>
+                                {result.shap_values.slice(0, 6).map((item) => {
+                                    const isPositive = item.shap_value > 0;
+                                    const maxVal = Math.max(
+                                        ...result.shap_values.slice(0, 6).map((i) => Math.abs(i.shap_value))
+                                    );
+                                    const pct = Math.round((Math.abs(item.shap_value) / maxVal) * 100);
+                                    const friendlyNames = {
+                                        "LOCATION_ENCODED": "Location",
+                                        "LAND AREA (sqft)": "Land Area",
+                                        "BATHROOM": "Bathrooms",
+                                        "BEDROOM": "Bedrooms",
+                                        "FLOOR": "Floor",
+                                        "ROAD ACCESS (ft)": "Road Access",
+                                        "PROPERTY AGE": "Property Age",
+                                        "AREA_PER_BEDROOM": "Area per Bedroom",
+                                        "TOTAL_ROOMS": "Total Rooms",
+                                        "FACING_ENCODED": "Facing Direction",
+                                        "HAS_PARKING": "Parking",
+                                        "HAS_BALCONY": "Balcony",
+                                        "HAS_GARDEN": "Garden",
+                                        "HAS_MODULAR_KITCHEN": "Modular Kitchen",
+                                        "IS_NEW": "New Property",
+                                    };
+                                    return (
+                                        <div key={item.feature} className="flex items-center gap-3 mb-3">
+                                            <span className="text-sm text-gray-600 w-36">
+                                                {friendlyNames[item.feature] || item.feature}
+                                            </span>
+                                            <div className="flex-1 bg-gray-100 rounded-full h-2">
+                                                <div
+                                                    className={`h-2 rounded-full ${isPositive ? "bg-green-500" : "bg-blue-500"}`}
+                                                    style={{ width: `${pct}%` }}
+                                                />
+                                            </div>
+                                            <span className={`text-xs w-24 text-right font-medium ${isPositive ? "text-green-600" : "text-blue-600"}`}>
+                                                {isPositive ? "▲" : "▼"} Rs.{Math.abs(item.shap_value).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                                            </span>
                                         </div>
-                                        <span className="text-sm text-gray-500 w-8">{f.pct}%</span>
-                                    </div>
-                                ))}
+                                    );
+                                })}
+                                <p className="text-xs text-gray-400 mt-3">
+                                    🟢 Green = pushing price up &nbsp;|&nbsp; 🔵 Blue = pushing price down
+                                </p>
                             </div>
 
                             {/* About Prediction */}

@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import sys
 
 from fastapi import FastAPI, Depends
@@ -12,6 +13,8 @@ if str(backend_dir) not in sys.path:
 from schemas import HouseInput, PredictionOutput
 from database import SessionLocal, Prediction
 from model import predict_price
+from model import predict_price, explain_prediction
+
 
 
 app = FastAPI(title="House Price Prediction API")
@@ -37,52 +40,43 @@ def root():
     return {"message": "House Price Prediction API is running"}
 
 
+
 @app.post("/predict", response_model=PredictionOutput)
 def predict(data: HouseInput, db: Session = Depends(get_db)):
     area_per_bedroom = data.land_area / data.bedroom
-    total_rooms = data.bedroom + data.bathroom
-    is_new = 1 if data.property_age <= 2 else 0
+    total_rooms      = data.bedroom + data.bathroom
+    is_new           = 1 if data.property_age <= 2 else 0
 
     features = [
-        data.floor,
-        data.bedroom,
-        data.bathroom,
-        data.land_area,
-        data.road_access,
-        data.property_age,
-        data.has_parking,
-        data.has_balcony,
-        data.has_garden,
-        data.has_modular_kitchen,
-        data.location_encoded,
-        data.facing_encoded,
-        area_per_bedroom,
-        total_rooms,
-        is_new,
+        data.floor, data.bedroom, data.bathroom,
+        data.land_area, data.road_access, data.property_age,
+        data.has_parking, data.has_balcony, data.has_garden,
+        data.has_modular_kitchen, data.location_encoded,
+        data.facing_encoded, area_per_bedroom, total_rooms, is_new
     ]
 
-    price = predict_price(features)
-    price_cr = f"{round(price / 10000000, 2)} Cr"
+    price      = predict_price(features)
+    price_cr   = f"{round(price / 10000000, 2)} Cr"
+    shap_vals  = explain_prediction(features)
 
+    # Save to DB
     record = Prediction(
-        floor=data.floor,
-        bedroom=data.bedroom,
-        bathroom=data.bathroom,
-        land_area=data.land_area,
-        road_access=data.road_access,
-        property_age=data.property_age,
-        has_parking=data.has_parking,
-        has_balcony=data.has_balcony,
-        has_garden=data.has_garden,
-        has_modular_kitchen=data.has_modular_kitchen,
-        location_encoded=data.location_encoded,
-        facing_encoded=data.facing_encoded,
+        floor=data.floor, bedroom=data.bedroom,
+        bathroom=data.bathroom, land_area=data.land_area,
+        road_access=data.road_access, property_age=data.property_age,
+        has_parking=data.has_parking, has_balcony=data.has_balcony,
+        has_garden=data.has_garden, has_modular_kitchen=data.has_modular_kitchen,
+        location_encoded=data.location_encoded, facing_encoded=data.facing_encoded,
         predicted_price=price,
     )
     db.add(record)
     db.commit()
 
-    return {"predicted_price": price, "predicted_price_cr": price_cr}
+    return {
+        "predicted_price"     : price,
+        "predicted_price_cr"  : price_cr,
+        "shap_values"         : shap_vals
+    }
 
 
 @app.get("/history")
