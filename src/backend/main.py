@@ -88,14 +88,15 @@ def history(db: Session = Depends(get_db)):
 @app.get("/stats")
 def stats():
     return {
-        "r2": 0.6719,
-        "mae": 6876270,
-        "rmse": 10698884,
-        "model": "Gradient Boosting",
-        "features": 15,
+        "r2"        : 0.6495,
+        "mae"       : 6768313,
+        "rmse"      : 11059032,
+        "model"     : "XGBoost",
+        "features"  : 15,
         "train_size": 840,
-        "test_size": 210,
+        "test_size" : 210,
     }
+
 @app.get("/locations")
 def locations():
     return [
@@ -211,3 +212,25 @@ def locations():
         {"label": "Tokha, Kathmandu", "value": 33750000},
         {"label": "Vinayak Colony, Lalitpur", "value": 51000000},
     ]
+
+@app.get("/shap-importance")
+def shap_importance():
+    import pandas as pd
+    from model import explainer, FEATURE_NAMES
+
+    X_train = pd.read_csv(
+        r"C:\Users\ASUS\Desktop\prediction_model\data\processed\X_train.csv"
+    )
+
+    shap_values = explainer.shap_values(X_train)
+    mean_abs_shap = abs(shap_values).mean(axis=0)
+
+    importance = []
+    for name, value in zip(FEATURE_NAMES, mean_abs_shap):
+        importance.append({
+            "feature": name,
+            "importance": round(float(value), 2)
+        })
+
+    importance.sort(key=lambda x: x["importance"], reverse=True)
+    return importance

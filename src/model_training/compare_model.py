@@ -70,7 +70,7 @@ for name, m in models.items():
     print(f"{name:<25} {mae:>15,.0f} {rmse:>15,.0f} {r2:>8.4f}")
 
 # -------------------------
-# SAVE BEST MODEL (untuned XGBoost)
+# SAVE BEST MODEL (XGBoost)
 # -------------------------
 best_model = results["XGBoost"]["model"]
 
