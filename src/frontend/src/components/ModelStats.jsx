@@ -105,7 +105,7 @@ export default function ModelStats() {
         <p className="text-xs text-gray-400 mb-4">
           Based on SHAP values — shows which features influence price the most across all predictions
         </p>
-        <ResponsiveContainer width="100%" height={350}>
+        <ResponsiveContainer width="100%" height={450}>
           <BarChart
             data={importance}
             layout="vertical"

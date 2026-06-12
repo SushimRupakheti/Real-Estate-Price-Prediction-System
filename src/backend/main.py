@@ -66,7 +66,8 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
         road_access=data.road_access, property_age=data.property_age,
         has_parking=data.has_parking, has_balcony=data.has_balcony,
         has_garden=data.has_garden, has_modular_kitchen=data.has_modular_kitchen,
-        location_encoded=data.location_encoded, facing_encoded=data.facing_encoded,
+        location_encoded=data.location_encoded, location_label=data.location_label,
+        facing_encoded=data.facing_encoded,
         predicted_price=price,
     )
     db.add(record)
@@ -81,7 +82,7 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
 
 @app.get("/history")
 def history(db: Session = Depends(get_db)):
-    records = db.query(Prediction).order_by(Prediction.id.desc()).limit(20).all()
+    records = db.query(Prediction).order_by(Prediction.id.desc()).all()
     return records
 
 

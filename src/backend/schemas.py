@@ -13,6 +13,7 @@ class HouseInput(BaseModel):
     has_garden: int
     has_modular_kitchen: int
     location_encoded: float
+    location_label: str | None = None
     facing_encoded: int
 
 class ShapFeature(BaseModel):
