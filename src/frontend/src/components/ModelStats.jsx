@@ -6,21 +6,21 @@ import {
 } from "recharts";
 
 const FRIENDLY_NAMES = {
-  "LOCATION_ENCODED"   : "Location",
-  "LAND AREA (sqft)"   : "Land Area",
-  "BATHROOM"           : "Bathrooms",
-  "BEDROOM"            : "Bedrooms",
-  "FLOOR"              : "Floor",
-  "ROAD ACCESS (ft)"   : "Road Access",
-  "PROPERTY AGE"       : "Property Age",
-  "AREA_PER_BEDROOM"   : "Area per Bedroom",
-  "TOTAL_ROOMS"        : "Total Rooms",
-  "FACING_ENCODED"     : "Facing Direction",
-  "HAS_PARKING"        : "Parking",
-  "HAS_BALCONY"        : "Balcony",
-  "HAS_GARDEN"         : "Garden",
+  "LOCATION_ENCODED": "Location",
+  "LAND AREA (sqft)": "Land Area",
+  "BATHROOM": "Bathrooms",
+  "BEDROOM": "Bedrooms",
+  "FLOOR": "Floor",
+  "ROAD ACCESS (ft)": "Road Access",
+  "PROPERTY AGE": "Property Age",
+  "AREA_PER_BEDROOM": "Area per Bedroom",
+  "TOTAL_ROOMS": "Total Rooms",
+  "FACING_ENCODED": "Facing Direction",
+  "HAS_PARKING": "Parking",
+  "HAS_BALCONY": "Balcony",
+  "HAS_GARDEN": "Garden",
   "HAS_MODULAR_KITCHEN": "Modular Kitchen",
-  "IS_NEW"             : "New Property",
+  "IS_NEW": "New Property",
 };
 
 const COLORS = [
@@ -29,9 +29,9 @@ const COLORS = [
 ];
 
 export default function ModelStats() {
-  const [stats, setStats]           = useState(null);
+  const [stats, setStats] = useState(null);
   const [importance, setImportance] = useState([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
@@ -84,10 +84,10 @@ export default function ModelStats() {
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Model Details</h3>
         <div className="grid grid-cols-2 gap-4">
           {[
-            { label: "Algorithm",        value: stats.model },
-            { label: "Features Used",    value: stats.features },
+            { label: "Algorithm", value: stats.model },
+            { label: "Features Used", value: stats.features },
             { label: "Training Samples", value: stats.train_size },
-            { label: "Testing Samples",  value: stats.test_size },
+            { label: "Testing Samples", value: stats.test_size },
           ].map((item) => (
             <div key={item.label} className="flex justify-between border-b pb-2">
               <span className="text-gray-500 text-sm">{item.label}</span>
@@ -163,11 +163,11 @@ export default function ModelStats() {
             </thead>
             <tbody>
               {[
-                { name: "Linear Regression",  mae: "77,71,336",  rmse: "1,11,19,450", r2: "0.6456", best: false },
-                { name: "Ridge Regression",   mae: "77,61,223",  rmse: "1,11,05,502", r2: "0.6465", best: false },
-                { name: "Gradient Boosting",  mae: "69,24,832",  rmse: "1,12,30,597", r2: "0.6385", best: false },
-                { name: "XGBoost",            mae: "67,68,313",  rmse: "1,10,59,032", r2: "0.6495", best: true  },
-                { name: "LightGBM",           mae: "73,76,073",  rmse: "1,17,35,476", r2: "0.6053", best: false },
+                { name: "Linear Regression", mae: "63,97,621", rmse: "94,28,487", r2: "0.6903", best: false },
+                { name: "Ridge Regression", mae: "63,99,840", rmse: "94,31,144", r2: "0.6901", best: false },
+                { name: "Gradient Boosting", mae: "60,75,427", rmse: "88,24,112", r2: "0.7287", best: true },
+                { name: "XGBoost", mae: "62,57,837", rmse: "92,16,012", r2: "0.7041", best: false },
+                { name: "LightGBM", mae: "63,28,997", rmse: "91,87,269", r2: "0.7059", best: false },
               ].map((row, i) => (
                 <tr key={row.name} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                   <td className="px-4 py-3 font-medium">{row.name}</td>

@@ -89,13 +89,13 @@ def history(db: Session = Depends(get_db)):
 @app.get("/stats")
 def stats():
     return {
-        "r2"        : 0.6495,
-        "mae"       : 6768313,
-        "rmse"      : 11059032,
-        "model"     : "XGBoost",
+        "r2"        : 0.7287,
+        "mae"       : 6075427,
+        "rmse"      : 8824112,
+        "model"     : "Gradient Boosting",
         "features"  : 15,
-        "train_size": 840,
-        "test_size" : 210,
+        "train_size": 816,
+        "test_size" : 205,
     }
 
 @app.get("/locations")

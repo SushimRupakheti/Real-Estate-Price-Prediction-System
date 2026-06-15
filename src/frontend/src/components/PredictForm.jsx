@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ResultCard from "./ResultCard";
 
 const FACING_OPTIONS = [
     { label: "East", value: 2 },
@@ -290,21 +291,7 @@ export default function PredictForm() {
                     ) : (
                         <>
                             {/* Price Result */}
-                            <div className="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
-                                <div>
-                                    <p className="text-gray-500 text-sm mb-1">Estimated Price</p>
-                                    <p className="text-4xl font-bold text-blue-700">
-                                        Rs. {result.predicted_price.toLocaleString("en-IN")}
-                                    </p>
-                                    <p className="text-gray-500 mt-1">({result.predicted_price_cr})</p>
-                                    {selectedLocation && (
-                                        <p className="text-green-600 text-sm mt-2">
-                                            📍 {selectedLocation.label}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="text-8xl">🏡</div>
-                            </div>
+                 <ResultCard result={result} />
 
                             {/* Key Factors — Real SHAP Values */}
                             <div className="bg-white rounded-2xl shadow p-6">

@@ -12,14 +12,14 @@ export default function ModelCard() {
         <h3 className="font-semibold text-blue-700 text-lg mb-3">📋 Model Overview</h3>
         <div className="grid grid-cols-2 gap-4">
           {[
-            { label: "Model Name",       value: "Nepal House Price Predictor" },
-            { label: "Algorithm",        value: "XGBoost (Gradient Boosted Trees)" },
-            { label: "Version",          value: "1.0" },
-            { label: "Last Updated",     value: "June 2026" },
-            { label: "Training Samples", value: "840 properties" },
-            { label: "Test Samples",     value: "210 properties" },
-            { label: "R² Score",         value: "0.6495" },
-            { label: "MAE",              value: "₹ 67,68,313" },
+            { label: "Model Name", value: "Nepal House Price Predictor" },
+            { label: "Algorithm", value: "Gradient Boosting" },
+            { label: "Version", value: "1.0" },
+            { label: "Last Updated", value: "June 2026" },
+            { label: "R² Score", value: "0.7287" },
+            { label: "MAE", value: "₹ 60,75,427" },
+            { label: "Training Samples", value: "816 properties" },
+            { label: "Test Samples", value: "205 properties" },
           ].map((item) => (
             <div key={item.label} className="flex justify-between border-b pb-2">
               <span className="text-gray-500 text-sm">{item.label}</span>
@@ -136,11 +136,10 @@ export default function ModelCard() {
             <div key={item.risk} className="border rounded-xl p-4">
               <div className="flex justify-between items-start mb-2">
                 <p className="font-medium text-gray-800">{item.risk}</p>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                  item.color === "red"
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${item.color === "red"
                     ? "bg-red-100 text-red-700"
                     : "bg-orange-100 text-orange-700"
-                }`}>
+                  }`}>
                   {item.level} Risk
                 </span>
               </div>
@@ -158,13 +157,13 @@ export default function ModelCard() {
         <h3 className="font-semibold text-blue-700 text-lg mb-3">📊 Training Data</h3>
         <div className="space-y-2 text-sm text-gray-700">
           {[
-            { label: "Source",           value: "Nepal real estate listing data" },
-            { label: "Total Records",    value: "1,082 raw → 1,050 after cleaning" },
-            { label: "Features",         value: "15 (location, size, amenities, age, access)" },
-            { label: "Target Variable",  value: "House Price (NPR)" },
-            { label: "Price Range",      value: "₹ 1 Cr — ₹ 32.5 Cr" },
-            { label: "Cities Covered",   value: "Kathmandu, Lalitpur, Bhaktapur, Chitwan, Pokhara and more" },
-            { label: "Outlier Removal",  value: "IQR + residential filter (bedroom ≤ 10, bathroom ≤ 10)" },
+            { label: "Source", value: "Nepal real estate listing data" },
+            { label: "Total Records", value: "1,082 raw → 1,050 after cleaning" },
+            { label: "Features", value: "15 (location, size, amenities, age, access)" },
+            { label: "Target Variable", value: "House Price (NPR)" },
+            { label: "Price Range", value: "₹ 1 Cr — ₹ 32.5 Cr" },
+            { label: "Cities Covered", value: "Kathmandu, Lalitpur, Bhaktapur, Chitwan, Pokhara and more" },
+            { label: "Outlier Removal", value: "IQR + residential filter (bedroom ≤ 10, bathroom ≤ 10)" },
             { label: "Train/Test Split", value: "80% train / 20% test (random_state=42)" },
           ].map((item) => (
             <div key={item.label} className="flex justify-between border-b pb-2">

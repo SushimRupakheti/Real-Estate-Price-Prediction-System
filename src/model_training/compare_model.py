@@ -70,12 +70,21 @@ for name, m in models.items():
     print(f"{name:<25} {mae:>15,.0f} {rmse:>15,.0f} {r2:>8.4f}")
 
 # -------------------------
-# SAVE BEST MODEL (XGBoost)
+# SAVE BEST MODEL
 # -------------------------
-best_model = results["XGBoost"]["model"]
+best_model_name = max(results, key=lambda x: results[x]["r2"])
+best_model = results[best_model_name]["model"]
 
-model_path = Path(r"C:\Users\ASUS\Desktop\prediction_model\models\best_model.pkl")
+model_path = Path(
+    r"C:\Users\ASUS\Desktop\prediction_model\models\best_model.pkl"
+)
+
 with open(model_path, "wb") as f:
     pickle.dump(best_model, f)
-
-print(f"\n✅ XGBoost saved to: {model_path}")
+    
+print("\nBest Model:")
+print(f"Name : {best_model_name}")
+print(f"R²   : {results[best_model_name]['r2']:.4f}")
+print(f"MAE  : {results[best_model_name]['mae']:,.0f}")
+print(f"RMSE : {results[best_model_name]['rmse']:,.0f}")
+print(f"\n✅ Best model ({best_model_name}) saved to: {model_path}")

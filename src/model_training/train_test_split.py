@@ -19,6 +19,13 @@ data = data[
 ]
 print("After Filter:", data.shape)
 
+# -------------------------
+# FILTER EXTREME OUTLIERS
+# -------------------------
+data = data[data["PRICE"] <= 100000000]  # Remove properties > 10 Cr
+print("After Price Cap (<=10 Cr):", data.shape)
+
+
 # Standardize FACING values
 data["FACING"] = data["FACING"].str.strip().str.lower()
 data["FACING"] = data["FACING"].str.replace(" ", "-", regex=False)
