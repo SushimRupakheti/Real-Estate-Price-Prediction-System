@@ -30,12 +30,12 @@ export default function ResultCard({ result }) {
       {/* Current Price */}
       <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex justify-between items-center">
         <div>
-          <p className="text-gray-500 text-sm mb-1">Current Estimated Price</p>
+          <p className="text-gray-500 text-sm mb-1">(Current Estimated Price)</p>
           <p className="text-4xl font-bold text-green-600">
-            {result.predicted_price_cr}
-          </p>
-          <p className="text-gray-400 text-sm mt-1">
             ₹ {price.toLocaleString("en-IN")}
+          </p>
+          <p className="text-gray-400 text-sm mt-4">
+            This price is an estimated market value based on <br></br>the model's analysis of the property's features and location.
           </p>
         </div>
         <div className="text-6xl">🏡</div>
@@ -44,7 +44,7 @@ export default function ResultCard({ result }) {
       {/* Price Forecast */}
       <div className="bg-white rounded-2xl shadow p-6">
         <h3 className="font-semibold text-gray-700 mb-1">
-          📈 Price Forecast
+          📈 Inflation-Based Price Projection (NRB Model Simulation)
         </h3>
         <p className="text-xs text-gray-400 mb-4">
           Based on NRB 2023/24 macro indicators — CPI inflation 5.4% and housing inflation 8.2%
@@ -90,7 +90,7 @@ export default function ResultCard({ result }) {
         </div>
 
         {/* NRB Context */}
-        <div className="mt-4 grid grid-cols-3 gap-3">
+        <div className="mt-4 grid grid-cols-3 gap-3 border-t pt-4">
           {[
             { label: "CPI Inflation", value: "5.4%", icon: "📊" },
             { label: "Housing Inflation", value: "8.2%", icon: "🏠" },
