@@ -1,9 +1,10 @@
-import pandas as pd
+import sqlite3
+import os
 
-data = pd.read_csv(r"C:\Users\ASUS\Desktop\prediction_model\data\processed\cleaned_house_data.csv")
+base_dir = os.path.dirname(__file__)
+db_path = os.path.abspath(os.path.join(base_dir, "..", "src", "backend", "predictions.db"))
 
-location_map = data.groupby("LOCATION")["PRICE"].median().reset_index()
-location_map.columns = ["location", "encoded"]
-location_map = location_map.sort_values("location")
+print(db_path)
 
-print(location_map.to_string(index=False))
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()

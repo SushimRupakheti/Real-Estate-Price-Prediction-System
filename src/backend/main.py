@@ -19,6 +19,51 @@ from model import predict_price, explain_prediction
 
 app = FastAPI(title="House Price Prediction API")
 
+MODEL_COMPARISON = [
+    {
+        "model": "Hedonic (OLS)",
+        "r2": 0.6593,
+        "mae": 6819377,
+        "rmse": 9889218,
+        "status": "Baseline",
+    },
+    {
+        "model": "Ridge Regression",
+        "r2": 0.6901,
+        "mae": 6399840,
+        "rmse": 9431144,
+        "status": "Baseline",
+    },
+    {
+        "model": "Linear Regression",
+        "r2": 0.6903,
+        "mae": 6397621,
+        "rmse": 9428487,
+        "status": "Baseline",
+    },
+    {
+        "model": "Gradient Boosting",
+        "r2": 0.7287,
+        "mae": 6075427,
+        "rmse": 8824112,
+        "status": "Selected",
+    },
+    {
+        "model": "XGBoost",
+        "r2": 0.7041,
+        "mae": 6257837,
+        "rmse": 9216012,
+        "status": "Baseline",
+    },
+    {
+        "model": "LightGBM",
+        "r2": 0.7059,
+        "mae": 6328997,
+        "rmse": 9187269,
+        "status": "Baseline",
+    },
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -96,6 +141,7 @@ def stats():
         "features"  : 15,
         "train_size": 816,
         "test_size" : 205,
+        "model_comparison": MODEL_COMPARISON,
     }
 
 @app.get("/locations")

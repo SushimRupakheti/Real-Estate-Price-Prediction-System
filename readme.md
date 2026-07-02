@@ -4,11 +4,11 @@ Gradient Boosting / XGBoost    ✅ Done          —
 FastAPI prototype              ✅ Done          —
 React dashboard                ✅ Done          —
 SHAP explainability            ✅ Done          Critical 
-LightGBM model                 ✅ Done          Important
-Time-aware validation          ❌ Missing       Important
-NRB macro indicators           ❌ Missing       Important
-Geospatial features (OSMnx)    ❌ Missing       Important
-Model drift/stability checks   ❌ Missing       Important
-Hedonic regression baseline    ❌ Missing       Important
-CRISP-DM documentation         ❌ Missing       Important
-Model card / ethical audit     ❌ Missing       Important
+LightGBM model                 ✅ Done           Important
+Hedonic regression baseline    ✅ Done           Important
+Time-aware validation          ✅Proxy           Important
+NRB macro indicators           ✅ manual         Important
+Geospatial features (OSMnx)    ✅ Done           Important
+Model drift/stability checks   ❌ Missing        Important
+CRISP-DM documentation         ❌ Missing        Important
+Model card / ethical audit     In progress        Important

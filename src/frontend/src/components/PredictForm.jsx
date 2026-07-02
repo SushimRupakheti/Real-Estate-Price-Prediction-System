@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import ResultCard from "./ResultCard";
+import PredictionDashboard from "./PredictionDashboard";
 
 const FACING_OPTIONS = [
     { label: "East", value: 2 },
@@ -14,6 +14,8 @@ const FACING_OPTIONS = [
 ];
 
 const ROAD_ACCESS_OPTIONS = [10, 12, 15, 20, 24, 30, 40];
+const HERO_IMAGE =
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80";
 
 export default function PredictForm() {
     const [form, setForm] = useState({
@@ -77,10 +79,7 @@ export default function PredictForm() {
             setError("Prediction failed. Please check your inputs.");
         } finally {
             setLoading(false);
-            console.log("Location Encoded Being Sent:", form.location_encoded);
-            console.log("Location Label:", locationSearch);
         }
-
     };
 
     const filteredLocations = locations
@@ -97,33 +96,27 @@ export default function PredictForm() {
         });
 
     return (
-        <div>
-            {/* HERO BANNER */}
-            <div className="relative h-52 bg-gradient-to-r from-blue-900 to-blue-700 overflow-hidden">
-                <div className="absolute inset-0 flex items-center px-10">
-                    <div className="text-white">
-                        <h1 className="text-3xl font-bold leading-tight">
+        <div className="mx-auto max-w-[1240px]">
+            <div className="mx-3 mt-3 relative h-44 rounded-xl bg-cover bg-center overflow-hidden shadow-sm border border-blue-100" style={{ backgroundImage: `linear-gradient(90deg, rgba(248,250,252,0.98) 0%, rgba(248,250,252,0.9) 34%, rgba(248,250,252,0.12) 72%), url(${HERO_IMAGE})` }}>
+                <div className="absolute inset-0 flex items-center px-9">
+                    <div className="text-slate-900 max-w-md">
+                        <h1 className="text-[34px] font-bold leading-tight">
                             Predict the Price of<br />Houses in Nepal 🏠
                         </h1>
-                        <p className="text-blue-200 mt-2 text-sm">
+                        <p className="text-slate-600 mt-3 text-sm leading-6">
                             Get an estimated price based on location, size, features and other important factors.
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* MAIN CONTENT */}
-            <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-3 gap-6">
-
-                {/* LEFT — FORM */}
-                <div className="col-span-1 bg-white rounded-2xl shadow p-6">
-                    <h2 className="text-blue-700 font-semibold text-lg mb-4 flex items-center gap-2">
+            <div className="px-3 py-3 grid grid-cols-[430px_minmax(0,1fr)] gap-4 items-start">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[560px]">
+                    <h2 className="text-blue-700 font-semibold text-lg mb-5 flex items-center gap-2">
                         👤 Enter House Details
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-
-                        {/* Location */}
                         <div className="relative">
                             <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">📍 Location</label>
                             <input
@@ -138,7 +131,7 @@ export default function PredictForm() {
                                     setShowSuggestions(true);
                                 }}
                                 required={!form.location_encoded}
-                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             {showSuggestions && locationSearch && (
                                 <ul className="absolute z-10 bg-white border border-gray-200 rounded-lg shadow-lg w-full max-h-44 overflow-y-auto mt-1">
@@ -163,7 +156,6 @@ export default function PredictForm() {
                             )}
                         </div>
 
-                        {/* Land Area */}
                         <div>
                             <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">📐 Land Area (sq ft)</label>
                             <input
@@ -173,18 +165,17 @@ export default function PredictForm() {
                                 onChange={handleChange}
                                 placeholder="e.g. 1500"
                                 required
-                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
 
-                        {/* Road Access */}
                         <div>
                             <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">🛣️ Road Access (ft)</label>
                             <select
                                 name="road_access"
                                 value={form.road_access}
                                 onChange={handleChange}
-                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 {ROAD_ACCESS_OPTIONS.map((v) => (
                                     <option key={v} value={v}>{v} ft</option>
@@ -192,14 +183,13 @@ export default function PredictForm() {
                             </select>
                         </div>
 
-                        {/* Facing */}
                         <div>
                             <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">🧭 Facing</label>
                             <select
                                 name="facing_encoded"
                                 value={form.facing_encoded}
                                 onChange={handleChange}
-                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 {FACING_OPTIONS.map((opt) => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -207,7 +197,6 @@ export default function PredictForm() {
                             </select>
                         </div>
 
-                        {/* Floor / Bedroom / Bathroom */}
                         <div className="grid grid-cols-3 gap-2">
                             {[
                                 { label: "🏢 Floor", name: "floor", placeholder: "2.5" },
@@ -223,13 +212,12 @@ export default function PredictForm() {
                                         onChange={handleChange}
                                         placeholder={f.placeholder}
                                         required
-                                        className="w-full border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full border border-gray-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
                             ))}
                         </div>
 
-                        {/* Property Age */}
                         <div>
                             <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">📅 Property Age (Years)</label>
                             <input
@@ -239,11 +227,10 @@ export default function PredictForm() {
                                 onChange={handleChange}
                                 placeholder="e.g. 10"
                                 required
-                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
 
-                        {/* Amenities */}
                         <div>
                             <label className="text-xs font-medium text-gray-500 uppercase mb-2 block">✨ Amenities</label>
                             <div className="grid grid-cols-2 gap-2">
@@ -267,11 +254,10 @@ export default function PredictForm() {
                             </div>
                         </div>
 
-                        {/* Submit */}
                         <button
                             type="submit"
                             disabled={loading || !form.location_encoded}
-                            className="w-full bg-blue-700 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full bg-blue-700 text-white py-3.5 rounded-lg font-semibold hover:bg-blue-800 transition disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                             {loading ? "Predicting..." : "📈 Predict Price"}
                         </button>
@@ -280,91 +266,12 @@ export default function PredictForm() {
                     </form>
                 </div>
 
-                {/* RIGHT — RESULT */}
-                <div className="col-span-2 space-y-6">
-                    {!result ? (
-                        <div className="bg-white rounded-2xl shadow p-10 flex flex-col items-center justify-center text-center h-full min-h-64">
-                            <div className="text-6xl mb-4">🏠</div>
-                            <p className="text-gray-400 text-lg">Fill in the details and click</p>
-                            <p className="text-blue-700 font-semibold text-lg">Predict Price</p>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Price Result */}
-                 <ResultCard result={result} />
-
-                            {/* Key Factors — Real SHAP Values */}
-                            <div className="bg-white rounded-2xl shadow p-6">
-                                <h3 className="font-semibold text-gray-700 mb-4">
-                                    Key Factors Influencing Price
-                                    <span className="text-xs text-gray-400 font-normal ml-2">(powered by SHAP)</span>
-                                </h3>
-                                {result.shap_values.slice(0, 6).map((item) => {
-                                    const isPositive = item.shap_value > 0;
-                                    const maxVal = Math.max(
-                                        ...result.shap_values.slice(0, 6).map((i) => Math.abs(i.shap_value))
-                                    );
-                                    const pct = Math.round((Math.abs(item.shap_value) / maxVal) * 100);
-                                    const friendlyNames = {
-                                        "LOCATION_ENCODED": "Location",
-                                        "LAND AREA (sqft)": "Land Area",
-                                        "BATHROOM": "Bathrooms",
-                                        "BEDROOM": "Bedrooms",
-                                        "FLOOR": "Floor",
-                                        "ROAD ACCESS (ft)": "Road Access",
-                                        "PROPERTY AGE": "Property Age",
-                                        "AREA_PER_BEDROOM": "Area per Bedroom",
-                                        "TOTAL_ROOMS": "Total Rooms",
-                                        "FACING_ENCODED": "Facing Direction",
-                                        "HAS_PARKING": "Parking",
-                                        "HAS_BALCONY": "Balcony",
-                                        "HAS_GARDEN": "Garden",
-                                        "HAS_MODULAR_KITCHEN": "Modular Kitchen",
-                                        "IS_NEW": "New Property",
-                                    };
-                                    return (
-                                        <div key={item.feature} className="flex items-center gap-3 mb-3">
-                                            <span className="text-sm text-gray-600 w-36">
-                                                {friendlyNames[item.feature] || item.feature}
-                                            </span>
-                                            <div className="flex-1 bg-gray-100 rounded-full h-2">
-                                                <div
-                                                    className={`h-2 rounded-full ${isPositive ? "bg-green-500" : "bg-blue-500"}`}
-                                                    style={{ width: `${pct}%` }}
-                                                />
-                                            </div>
-                                            <span className={`text-xs w-24 text-right font-medium ${isPositive ? "text-green-600" : "text-blue-600"}`}>
-                                                {isPositive ? "▲" : "▼"} Rs.{Math.abs(item.shap_value).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                                <p className="text-xs text-gray-400 mt-3">
-                                    🟢 Green = pushing price up &nbsp;|&nbsp; 🔵 Blue = pushing price down
-                                </p>
-                            </div>
-
-                            {/* About Prediction */}
-                            <div className="bg-white rounded-2xl shadow p-6">
-                                <div className="flex items-start gap-3">
-                                    <span className="text-blue-500 text-xl">ℹ️</span>
-                                    <div>
-                                        <p className="font-semibold text-gray-700 mb-1">About This Prediction</p>
-                                        <p className="text-sm text-gray-500">
-                                            This price is predicted using a machine learning model trained on
-                                            historical house sale data from different locations in Nepal.
-                                        </p>
-                                        <div className="mt-3 flex items-center gap-2 text-green-600 text-sm font-medium">
-                                            ✅ Model Accuracy (R² Score): 0.6719
-                                        </div>
-                                        <div className="mt-1 text-sm text-gray-400">
-                                            📅 Predicted on: {new Date().toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    )}
+                <div className="min-w-0">
+                    <PredictionDashboard
+                        result={result}
+                        form={form}
+                        locationLabel={selectedLocation?.label || locationSearch}
+                    />
                 </div>
             </div>
         </div>

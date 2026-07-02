@@ -28,6 +28,14 @@ const COLORS = [
   "#93c5fd", "#bfdbfe", "#dbeafe", "#eff6ff",
 ];
 
+const FALLBACK_MODEL_COMPARISON = [
+  { model: "Linear Regression", mae: 6397621, rmse: 9428487, r2: 0.6903, status: "Baseline" },
+  { model: "Ridge Regression", mae: 6399840, rmse: 9431144, r2: 0.6901, status: "Baseline" },
+  { model: "Gradient Boosting", mae: 6075427, rmse: 8824112, r2: 0.7287, status: "Selected" },
+  { model: "XGBoost", mae: 6257837, rmse: 9216012, r2: 0.7041, status: "Baseline" },
+  { model: "LightGBM", mae: 6328997, rmse: 9187269, r2: 0.7059, status: "Baseline" },
+];
+
 export default function ModelStats() {
   const [stats, setStats] = useState(null);
   const [importance, setImportance] = useState([]);
@@ -51,6 +59,8 @@ export default function ModelStats() {
   }, []);
 
   if (loading) return <p className="text-gray-500 p-8">Loading...</p>;
+
+  const modelComparison = stats.model_comparison || FALLBACK_MODEL_COMPARISON;
 
   return (
     <div className="space-y-6">
@@ -162,20 +172,14 @@ export default function ModelStats() {
               </tr>
             </thead>
             <tbody>
-              {[
-                { name: "Linear Regression", mae: "63,97,621", rmse: "94,28,487", r2: "0.6903", best: false },
-                { name: "Ridge Regression", mae: "63,99,840", rmse: "94,31,144", r2: "0.6901", best: false },
-                { name: "Gradient Boosting", mae: "60,75,427", rmse: "88,24,112", r2: "0.7287", best: true },
-                { name: "XGBoost", mae: "62,57,837", rmse: "92,16,012", r2: "0.7041", best: false },
-                { name: "LightGBM", mae: "63,28,997", rmse: "91,87,269", r2: "0.7059", best: false },
-              ].map((row, i) => (
-                <tr key={row.name} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                  <td className="px-4 py-3 font-medium">{row.name}</td>
-                  <td className="px-4 py-3">₹ {row.mae}</td>
-                  <td className="px-4 py-3">₹ {row.rmse}</td>
-                  <td className="px-4 py-3">{row.r2}</td>
+              {modelComparison.map((row, i) => (
+                <tr key={row.model} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                  <td className="px-4 py-3 font-medium">{row.model}</td>
+                  <td className="px-4 py-3">₹ {Math.round(row.mae).toLocaleString("en-IN")}</td>
+                  <td className="px-4 py-3">₹ {Math.round(row.rmse).toLocaleString("en-IN")}</td>
+                  <td className="px-4 py-3">{Number(row.r2).toFixed(4)}</td>
                   <td className="px-4 py-3">
-                    {row.best ? (
+                    {row.status === "Selected" ? (
                       <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
                         ✅ Selected
                       </span>
