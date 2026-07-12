@@ -20,12 +20,10 @@ const FRIENDLY_NAMES = {
   IS_NEW: "New Property",
 };
 
-const COMPARISON_DATA = [
-  { label: "Imadol,\nLalitpur", value: 2.95 },
-  { label: "Satdobato,\nLalitpur", value: 4.32 },
-  { label: "Bhaisepati,\nLalitpur", value: 4.76 },
-  { label: "Budhanilkantha,\nKathmandu", value: 5.14 },
-  { label: "Gyaneshwor,\nKathmandu", value: 4.5 },
+const NRB_MACRO_INDICATORS = [
+  { label: "CPI inflation", value: "5.4%", signal: "Upward", detail: "Broad price pressure" },
+  { label: "Housing inflation", value: "8.2%", signal: "Upward", detail: "Construction and rent pressure" },
+  { label: "Avg. lending rate", value: "11.5%", signal: "Restraining", detail: "Higher borrowing cost" },
 ];
 
 function formatPrice(value) {
@@ -118,27 +116,37 @@ function KeyFactorsCard({ result, form, locationLabel }) {
   );
 }
 
-function PriceComparisonCard() {
-  const maxValue = Math.max(...COMPARISON_DATA.map((item) => item.value));
+function MacroIndicatorsCard() {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 min-h-[176px]">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        Price Comparison (By Location)
-      </h3>
-      <div className="flex h-32 items-end gap-2 border-l border-b border-gray-200 px-2 pt-2">
-        {COMPARISON_DATA.map((item, index) => (
-          <div key={item.label} className="flex flex-1 flex-col items-center justify-end gap-1">
-            <span className="text-[10px] font-semibold text-gray-700">{item.value.toFixed(2)} Cr</span>
-            <div
-              className={`w-6 rounded-t-md ${index % 2 === 0 ? "bg-blue-500" : "bg-cyan-500"}`}
-              style={{ height: `${(item.value / maxValue) * 76}px` }}
-            />
-            <span className="whitespace-pre-line text-center text-[10px] leading-tight text-gray-600">
-              {item.label}
-            </span>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700">NRB Macro Inflation Signals</h3>
+          <p className="mt-1 text-[11px] text-gray-400">Potential influence over the next 3–6 months</p>
+        </div>
+        <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-700">
+          Outlook
+        </span>
+      </div>
+      <div className="mt-3 space-y-2">
+        {NRB_MACRO_INDICATORS.map((item) => (
+          <div key={item.label} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-slate-50 px-3 py-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-gray-700">{item.label}</p>
+              <p className="truncate text-[10px] text-gray-400">{item.detail}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-bold text-blue-700">{item.value}</p>
+              <p className={`text-[10px] font-medium ${item.signal === "Upward" ? "text-orange-600" : "text-emerald-600"}`}>
+                {item.signal}
+              </p>
+            </div>
           </div>
         ))}
       </div>
+      <p className="mt-2 text-[10px] leading-4 text-gray-400">
+        Directional context only; these indicators do not directly forecast an individual property price.
+      </p>
     </div>
   );
 }
@@ -261,7 +269,7 @@ export default function PredictionDashboard({ result, form, locationLabel }) {
         <KeyFactorsCard result={result} form={form} locationLabel={locationLabel} />
       </div>
       <div className="col-span-6">
-        <PriceComparisonCard />
+        <MacroIndicatorsCard />
       </div>
       <div className="col-span-6">
         <LocationMap locationLabel={locationLabel} compact />

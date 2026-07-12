@@ -157,7 +157,7 @@ export default function PredictForm() {
                         </div>
 
                         <div>
-                            <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">📐 Land Area (sq ft)</label>
+                            <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">📐 Land Area (sq ft) 1 AANA = 3456 sq ft</label>
                             <input
                                 type="number"
                                 name="land_area"
