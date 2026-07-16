@@ -14,8 +14,7 @@ const FACING_OPTIONS = [
 ];
 
 const ROAD_ACCESS_OPTIONS = [10, 12, 15, 20, 24, 30, 40];
-const HERO_IMAGE =
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80";
+const HERO_IMAGE = "/header.png";
 
 export default function PredictForm() {
     const [form, setForm] = useState({
@@ -157,7 +156,7 @@ export default function PredictForm() {
                         </div>
 
                         <div>
-                            <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">📐 Land Area (sq ft) 1 AANA = 3456 sq ft</label>
+                            <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">📐 Land Area (sq ft) 1 AANA ≈ 345.6 sq ft</label>
                             <input
                                 type="number"
                                 name="land_area"

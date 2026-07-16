@@ -34,23 +34,6 @@ function formatCrore(value) {
   return ((value || 0) / 10000000).toFixed(2);
 }
 
-function HouseIllustration() {
-  return (
-    <div className="relative hidden h-24 w-36 shrink-0 md:block">
-      <div className="absolute right-6 top-1 h-16 w-28 rounded-full bg-blue-50" />
-      <div className="absolute right-1 top-6 h-14 w-32 rounded-full bg-blue-50" />
-      <div className="absolute bottom-1 right-12 h-16 w-24 rounded-t-md border border-blue-200 bg-blue-50 shadow-inner" />
-      <div className="absolute bottom-16 right-10 h-10 w-20 rotate-45 rounded-sm bg-blue-500" />
-      <div className="absolute bottom-4 right-24 h-8 w-6 rounded-t bg-blue-600" />
-      <div className="absolute bottom-11 right-20 h-5 w-5 border border-blue-500 bg-white" />
-      <div className="absolute bottom-11 right-7 h-5 w-5 border border-blue-500 bg-white" />
-      <div className="absolute bottom-2 right-0 rounded-lg bg-blue-700 px-3 py-4 text-sm font-bold text-white shadow-lg">
-        Rs
-      </div>
-    </div>
-  );
-}
-
 function EstimatedPriceCard({ result, locationLabel }) {
   const price = result?.predicted_price || 45200000;
   return (
@@ -67,7 +50,6 @@ function EstimatedPriceCard({ result, locationLabel }) {
           ↑ Scenario estimate for {locationLabel || "selected location"}
         </p>
       </div>
-      <HouseIllustration />
     </div>
   );
 }
