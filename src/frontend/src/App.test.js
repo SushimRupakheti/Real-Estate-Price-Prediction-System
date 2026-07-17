@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
+jest.mock("./components/LocationMap", () => () => <div>Map</div>);
+
+test("renders the existing prediction application", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(screen.getByText("Nepal House Predictor")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Predict" })).toBeInTheDocument();
 });

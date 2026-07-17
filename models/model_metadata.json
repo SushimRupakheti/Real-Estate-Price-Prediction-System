@@ -1,0 +1,12 @@
+{
+  "best_model": "Gradient Boosting",
+  "selection_metric": "test_r2",
+  "trained_at_utc": "2026-07-17T07:09:55.505812+00:00",
+  "random_state": 42,
+  "test_size": 0.2,
+  "train_rows": 816,
+  "test_rows": 205,
+  "cross_validation": "5-fold KFold on training data only",
+  "artifact": "best_model.joblib",
+  "preprocessing": "fitted inside sklearn Pipeline on training data only"
+}

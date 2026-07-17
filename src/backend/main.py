@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 import sys
 
@@ -12,57 +13,13 @@ if str(backend_dir) not in sys.path:
 
 from schemas import HouseInput, PredictionOutput
 from database import SessionLocal, Prediction
-from model import predict_price
 from model import predict_price, explain_prediction
+from infrastructure_routes import router as infrastructure_router
 
 
 
 app = FastAPI(title="House Price Prediction API")
-
-MODEL_COMPARISON = [
-    {
-        "model": "Hedonic (OLS)",
-        "r2": 0.6593,
-        "mae": 6819377,
-        "rmse": 9889218,
-        "status": "Baseline",
-    },
-    {
-        "model": "Ridge Regression",
-        "r2": 0.6901,
-        "mae": 6399840,
-        "rmse": 9431144,
-        "status": "Baseline",
-    },
-    {
-        "model": "Linear Regression",
-        "r2": 0.6903,
-        "mae": 6397621,
-        "rmse": 9428487,
-        "status": "Baseline",
-    },
-    {
-        "model": "Gradient Boosting",
-        "r2": 0.7287,
-        "mae": 6075427,
-        "rmse": 8824112,
-        "status": "Selected",
-    },
-    {
-        "model": "XGBoost",
-        "r2": 0.7041,
-        "mae": 6257837,
-        "rmse": 9216012,
-        "status": "Baseline",
-    },
-    {
-        "model": "LightGBM",
-        "r2": 0.7059,
-        "mae": 6328997,
-        "rmse": 9187269,
-        "status": "Baseline",
-    },
-]
+app.include_router(infrastructure_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -97,7 +54,8 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
         data.land_area, data.road_access, data.property_age,
         data.has_parking, data.has_balcony, data.has_garden,
         data.has_modular_kitchen, data.location_encoded,
-        data.facing_encoded, area_per_bedroom, total_rooms, is_new
+        data.facing_encoded, area_per_bedroom, total_rooms, is_new,
+        data.location_label
     ]
 
     price      = predict_price(features)
@@ -133,15 +91,16 @@ def history(db: Session = Depends(get_db)):
 
 @app.get("/stats")
 def stats():
+    root_dir = Path(__file__).resolve().parents[2]
+    metrics = json.loads((root_dir / "models" / "metrics.json").read_text(encoding="utf-8"))
+    metadata = json.loads((root_dir / "models" / "model_metadata.json").read_text(encoding="utf-8"))
+    selected = metrics[metadata["best_model"]]
     return {
-        "r2"        : 0.7287,
-        "mae"       : 6075427,
-        "rmse"      : 8824112,
-        "model"     : "Gradient Boosting",
-        "features"  : 15,
-        "train_size": 816,
-        "test_size" : 205,
-        "model_comparison": MODEL_COMPARISON,
+        "r2": selected["r2"], "mae": selected["mae"], "rmse": selected["rmse"],
+        "model": metadata["best_model"], "features": 15,
+        "train_size": metadata["train_rows"], "test_size": metadata["test_rows"],
+        "model_comparison": [{"model": name, "status": "Selected" if name == metadata["best_model"] else "Baseline", **values}
+                             for name, values in metrics.items()],
     }
 
 @app.get("/locations")
@@ -263,21 +222,10 @@ def locations():
 @app.get("/shap-importance")
 def shap_importance():
     import pandas as pd
-    from model import explainer, FEATURE_NAMES
+    from model import global_feature_importance
 
     X_train = pd.read_csv(
         r"C:\Users\ASUS\Desktop\prediction_model\data\processed\X_train.csv"
     )
 
-    shap_values = explainer.shap_values(X_train)
-    mean_abs_shap = abs(shap_values).mean(axis=0)
-
-    importance = []
-    for name, value in zip(FEATURE_NAMES, mean_abs_shap):
-        importance.append({
-            "feature": name,
-            "importance": round(float(value), 2)
-        })
-
-    importance.sort(key=lambda x: x["importance"], reverse=True)
-    return importance
+    return global_feature_importance(X_train)

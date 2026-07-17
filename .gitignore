@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+src/backend/infrastructure_cache.db
+src/frontend/build/

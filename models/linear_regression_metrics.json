@@ -1,0 +1,13 @@
+{
+  "model": "Linear Regression",
+  "parameters": {
+    "fit_intercept": false
+  },
+  "mae": 7773594.249317189,
+  "rmse": 10910871.247559533,
+  "r2": 0.5852329871976163,
+  "cv_mean_r2": 0.5823590514692606,
+  "cv_std_r2": 0.030916236317260225,
+  "train_rows": 816,
+  "test_rows": 205
+}

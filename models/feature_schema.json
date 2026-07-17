@@ -1,0 +1,99 @@
+{
+  "target": "PRICE",
+  "features": [
+    {
+      "name": "LOCATION",
+      "dtype": "object",
+      "required": true
+    },
+    {
+      "name": "FACING",
+      "dtype": "string",
+      "required": true
+    },
+    {
+      "name": "FLOOR",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "BEDROOM",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "BATHROOM",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "LAND AREA (sqft)",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "ROAD ACCESS (ft)",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "PROPERTY AGE",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "HAS_PARKING",
+      "dtype": "int64",
+      "required": true
+    },
+    {
+      "name": "HAS_BALCONY",
+      "dtype": "int64",
+      "required": true
+    },
+    {
+      "name": "HAS_GARDEN",
+      "dtype": "int64",
+      "required": true
+    },
+    {
+      "name": "HAS_MODULAR_KITCHEN",
+      "dtype": "int64",
+      "required": true
+    },
+    {
+      "name": "AREA_PER_BEDROOM",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "TOTAL_ROOMS",
+      "dtype": "float64",
+      "required": true
+    },
+    {
+      "name": "IS_NEW",
+      "dtype": "int64",
+      "required": true
+    }
+  ],
+  "numeric_features": [
+    "FLOOR",
+    "BEDROOM",
+    "BATHROOM",
+    "LAND AREA (sqft)",
+    "ROAD ACCESS (ft)",
+    "PROPERTY AGE",
+    "HAS_PARKING",
+    "HAS_BALCONY",
+    "HAS_GARDEN",
+    "HAS_MODULAR_KITCHEN",
+    "AREA_PER_BEDROOM",
+    "TOTAL_ROOMS",
+    "IS_NEW"
+  ],
+  "categorical_features": [
+    "LOCATION",
+    "FACING"
+  ]
+}

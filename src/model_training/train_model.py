@@ -1,58 +1,44 @@
-import pandas as pd
+"""Retrain and save the leakage-free Linear Regression model."""
+import json
+
+import joblib
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-import numpy as np
+from sklearn.model_selection import KFold, cross_val_score
 
-# -------------------------
-# LOAD SPLIT DATA
-# -------------------------
-X_train = pd.read_csv(r"C:\Users\ASUS\Desktop\prediction_model\data\processed\X_train.csv")
-X_test  = pd.read_csv(r"C:\Users\ASUS\Desktop\prediction_model\data\processed\X_test.csv")
-y_train = pd.read_csv(r"C:\Users\ASUS\Desktop\prediction_model\data\processed\y_train.csv").squeeze()
-y_test  = pd.read_csv(r"C:\Users\ASUS\Desktop\prediction_model\data\processed\y_test.csv").squeeze()
+from compare_model import MODEL_DIR, build_pipeline, load_clean_data, split_data
 
-print("Data Loaded Successfully")
-print("X_train:", X_train.shape)
 
-# -------------------------
-# TRAIN MODEL
-# -------------------------
-model = LinearRegression()
-model.fit(X_train, y_train)
+def train_linear_regression():
+    X_train, X_test, y_train, y_test = split_data(load_clean_data())
+    # With full one-hot categorical columns, omitting the standalone intercept
+    # avoids redundant columns and performed better on the fixed holdout set.
+    pipeline = build_pipeline(X_train, LinearRegression(fit_intercept=False))
+    cv = KFold(n_splits=5, shuffle=True, random_state=42)
+    scores = cross_val_score(
+        pipeline, X_train, y_train, cv=cv, scoring="r2", n_jobs=1
+    )
+    pipeline.fit(X_train, y_train)
+    prediction = pipeline.predict(X_test)
+    metrics = {
+        "model": "Linear Regression",
+        "parameters": {"fit_intercept": False},
+        "mae": float(mean_absolute_error(y_test, prediction)),
+        "rmse": float(mean_squared_error(y_test, prediction) ** 0.5),
+        "r2": float(r2_score(y_test, prediction)),
+        "cv_mean_r2": float(scores.mean()),
+        "cv_std_r2": float(scores.std()),
+        "train_rows": len(X_train),
+        "test_rows": len(X_test),
+    }
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    joblib.dump(pipeline, MODEL_DIR / "linear_regression.joblib")
+    (MODEL_DIR / "linear_regression_metrics.json").write_text(
+        json.dumps(metrics, indent=2), encoding="utf-8"
+    )
+    print(json.dumps(metrics, indent=2))
+    return pipeline, metrics
 
-print("\nModel Trained Successfully")
 
-# -------------------------
-# EVALUATE
-# -------------------------
-y_pred = model.predict(X_test)
-
-mae  = mean_absolute_error(y_test, y_pred)
-rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-r2   = r2_score(y_test, y_pred)
-
-print(f"\nMAE  : {mae:,.0f}")
-print(f"RMSE : {rmse:,.0f}")
-print(f"R²   : {r2:.4f}")
-
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.tree import DecisionTreeRegressor
-
-models = {
-    "Linear Regression"   : LinearRegression(),
-    "Decision Tree"       : DecisionTreeRegressor(random_state=42),
-    "Random Forest"       : RandomForestRegressor(n_estimators=100, random_state=42),
-    "Gradient Boosting"   : GradientBoostingRegressor(n_estimators=100, random_state=42),
-}
-
-print("\n--- MODEL COMPARISON ---")
-for name, m in models.items():
-    m.fit(X_train, y_train)
-    pred = m.predict(X_test)
-    mae  = mean_absolute_error(y_test, pred)
-    rmse = np.sqrt(mean_squared_error(y_test, pred))
-    r2   = r2_score(y_test, pred)
-    print(f"\n{name}")
-    print(f"  MAE  : {mae:,.0f}")
-    print(f"  RMSE : {rmse:,.0f}")
-    print(f"  R²   : {r2:.4f}")
+if __name__ == "__main__":
+    train_linear_regression()

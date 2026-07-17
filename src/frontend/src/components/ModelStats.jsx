@@ -28,39 +28,47 @@ const COLORS = [
   "#93c5fd", "#bfdbfe", "#dbeafe", "#eff6ff",
 ];
 
-const FALLBACK_MODEL_COMPARISON = [
-  { model: "Linear Regression", mae: 6397621, rmse: 9428487, r2: 0.6903, status: "Baseline" },
-  { model: "Ridge Regression", mae: 6399840, rmse: 9431144, r2: 0.6901, status: "Baseline" },
-  { model: "Gradient Boosting", mae: 6075427, rmse: 8824112, r2: 0.7287, status: "Selected" },
-  { model: "XGBoost", mae: 6257837, rmse: 9216012, r2: 0.7041, status: "Baseline" },
-  { model: "LightGBM", mae: 6328997, rmse: 9187269, r2: 0.7059, status: "Baseline" },
-];
-
 export default function ModelStats() {
   const [stats, setStats] = useState(null);
   const [importance, setImportance] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    Promise.all([
+    Promise.allSettled([
       axios.get("http://127.0.0.1:8000/stats"),
       axios.get("http://127.0.0.1:8000/shap-importance"),
-    ]).then(([statsRes, shapRes]) => {
-      setStats(statsRes.data);
-      setImportance(
-        shapRes.data
+    ]).then(([statsResult, shapResult]) => {
+      if (statsResult.status === "fulfilled") {
+        setStats(statsResult.value.data);
+      } else {
+        setError("Model statistics are unavailable. Check that the FastAPI backend is running on port 8000.");
+      }
+
+      if (shapResult.status === "fulfilled") {
+        setImportance(
+          shapResult.value.data
           .filter((d) => d.importance > 0)
           .map((d) => ({
             ...d,
             label: FRIENDLY_NAMES[d.feature] || d.feature,
           }))
-      );
+        );
+      }
     }).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <p className="text-gray-500 p-8">Loading...</p>;
+  if (!stats) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-6">
+        <h2 className="text-lg font-semibold">Unable to load model statistics</h2>
+        <p className="mt-2 text-sm">{error}</p>
+      </div>
+    );
+  }
 
-  const modelComparison = stats.model_comparison || FALLBACK_MODEL_COMPARISON;
+  const modelComparison = stats.model_comparison || [];
 
   return (
     <div className="space-y-6">

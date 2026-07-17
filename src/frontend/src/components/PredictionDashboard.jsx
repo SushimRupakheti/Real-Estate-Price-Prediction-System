@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import LocationMap from "./LocationMap";
+import InfrastructureAnalysis from "./InfrastructureAnalysis";
 
 const FRIENDLY_NAMES = {
   LOCATION_ENCODED: "Location",
@@ -253,15 +254,14 @@ export default function PredictionDashboard({ result, form, locationLabel }) {
       <div className="col-span-6">
         <MacroIndicatorsCard />
       </div>
-      <div className="col-span-6">
-        <LocationMap locationLabel={locationLabel} compact />
-      </div>
+      {!result && <div className="col-span-6"><LocationMap locationLabel={locationLabel} compact /></div>}
       <div className="col-span-6">
         <AboutPredictionCard />
       </div>
       <div className="col-span-12">
         <AlternativeLocationsCard result={result} locationLabel={locationLabel} />
       </div>
+      {result && <div className="col-span-12"><InfrastructureAnalysis locationLabel={locationLabel} /></div>}
     </div>
   );
 }

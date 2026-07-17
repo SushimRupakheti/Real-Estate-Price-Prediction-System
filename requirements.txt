@@ -1,0 +1,17 @@
+# Runtime verified with:
+# C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\python.exe
+# Python 3.14.5 (64-bit, Windows)
+fastapi==0.136.3
+uvicorn==0.48.0
+pandas==2.3.3
+numpy==2.3.5
+scikit-learn==1.7.2
+joblib==1.5.2
+shap==0.52.0
+SQLAlchemy==2.0.50
+pydantic==2.13.4
+httpx==0.28.1
+networkx==3.6.1
+pytest==9.0.2
+pytest-asyncio==1.3.0
+respx==0.22.0

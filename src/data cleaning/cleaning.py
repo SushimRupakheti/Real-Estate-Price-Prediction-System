@@ -269,22 +269,8 @@ print("\nFinal shape:", data.shape)
 # STEP 11: ENCODE FACING (ONE-HOT)
 # =====================================
 
-# =====================================
-# STEP 11: LOCATION TARGET ENCODING
-# =====================================
-
-print("\nEncoding LOCATION using target mean...")
-
-# Calculate mean price per location
-location_mean = data.groupby("LOCATION")["PRICE"].mean()
-
-# Map it back to dataset
-data["LOCATION_ENCODED"] = data["LOCATION"].map(location_mean)
-
-print("\nLOCATION encoding sample:")
-print(data[["LOCATION", "LOCATION_ENCODED"]].head(10))
-
-print("\nMissing LOCATION encoding:", data["LOCATION_ENCODED"].isna().sum())
+# LOCATION remains a categorical value. It is one-hot encoded inside the model
+# Pipeline after splitting, so no feature is derived from PRICE.
 
 # ==========================
 # MISSING VALUES insertion
