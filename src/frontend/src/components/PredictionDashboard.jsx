@@ -36,22 +36,59 @@ function formatCrore(value) {
 }
 
 function EstimatedPriceCard({ result, locationLabel }) {
-  const price = result?.predicted_price || 45200000;
+  const price = result?.predicted_price;
+
+  if (!price) {
+    return (
+      <section className="h-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-start gap-3">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">2</span>
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">Estimated current price</h2>
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              Complete the property details and select a location to generate an estimate.
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-5 py-8 text-center">
+          <p className="text-sm font-medium text-slate-600">Your estimate will appear here</p>
+          <p className="mt-1 text-xs text-slate-400">No price has been calculated yet.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex items-center justify-between min-h-[132px]">
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-gray-700">Estimated Price</p>
-        <p className="mt-2 text-3xl leading-none font-bold text-blue-700">
+    <section className="h-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">2</span>
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">Estimated current price</h2>
+            <p className="mt-1 text-xs text-slate-500">Present-day model estimate</p>
+          </div>
+        </div>
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-medium text-slate-600">
+          Estimate ready
+        </span>
+      </div>
+      <div className="min-w-0 pt-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Estimated price</p>
+        <p className="mt-3 text-3xl font-bold leading-none tracking-tight text-slate-950 sm:text-4xl">
           Rs. {formatPrice(price)}
         </p>
-        <p className="text-base font-medium text-blue-700">
-          (Rs. {formatCrore(price)} Crore)
+        <p className="mt-2 text-base font-medium text-slate-600">
+          Rs. {formatCrore(price)} crore
         </p>
-        <p className="mt-2 truncate text-xs text-green-600">
-          ↑ Scenario estimate for {locationLabel || "selected location"}
+        <p className="mt-6 flex items-center gap-2 border-t border-slate-100 pt-4 text-sm text-slate-600">
+          <span className="inline-block h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />
+          <span className="truncate">Based on the submitted property details for {locationLabel || "the selected location"}</span>
+        </p>
+        <p className="mt-2 text-xs leading-5 text-slate-400">
+          This is a present-day model estimate, not a valuation certificate or future-price forecast.
         </p>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -77,21 +114,22 @@ function KeyFactorsCard({ result, form, locationLabel }) {
     : fallback;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 min-h-[176px]">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        Key Factors Influencing Price
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 min-h-[176px]">
+      <h3 className="text-sm font-semibold text-slate-800 mb-1">
+        Price factor breakdown
       </h3>
+      <p className="mb-4 text-xs text-slate-400">Relative influence for this estimate</p>
       <div className="space-y-3">
         {rows.map((row) => (
           <div key={row.feature} className="grid grid-cols-[minmax(0,1fr)_96px_34px] items-center gap-2 text-xs">
-            <span className="text-gray-700 truncate">{row.label}</span>
-            <div className="h-2 rounded-full bg-gray-100">
+            <span className="text-slate-700 truncate">{row.label}</span>
+            <div className="h-1.5 rounded-full bg-slate-100">
               <div
-                className="h-2 rounded-full bg-blue-600"
+                className="h-1.5 rounded-full bg-slate-700"
                 style={{ width: `${Math.min(row.pct, 100)}%` }}
               />
             </div>
-            <span className="text-right font-medium text-gray-600">{row.pct}%</span>
+            <span className="text-right font-medium text-slate-500">{row.pct}%</span>
           </div>
         ))}
       </div>
@@ -101,57 +139,35 @@ function KeyFactorsCard({ result, form, locationLabel }) {
 
 function MacroIndicatorsCard() {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 min-h-[176px]">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 min-h-[176px]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-gray-700">NRB Macro Inflation Signals</h3>
-          <p className="mt-1 text-[11px] text-gray-400">Potential influence over the next 3–6 months</p>
+          <h3 className="text-sm font-semibold text-slate-800">Market context</h3>
+          <p className="mt-1 text-[11px] text-slate-400">Reference indicators from NRB data</p>
         </div>
-        <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-700">
-          Outlook
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-600">
+          Context only
         </span>
       </div>
       <div className="mt-3 space-y-2">
         {NRB_MACRO_INDICATORS.map((item) => (
           <div key={item.label} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-slate-50 px-3 py-2">
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-gray-700">{item.label}</p>
-              <p className="truncate text-[10px] text-gray-400">{item.detail}</p>
+              <p className="text-xs font-semibold text-slate-700">{item.label}</p>
+              <p className="truncate text-[10px] text-slate-400">{item.detail}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs font-bold text-blue-700">{item.value}</p>
-              <p className={`text-[10px] font-medium ${item.signal === "Upward" ? "text-orange-600" : "text-emerald-600"}`}>
+              <p className="text-xs font-bold text-slate-800">{item.value}</p>
+              <p className="text-[10px] font-medium text-slate-500">
                 {item.signal}
               </p>
             </div>
           </div>
         ))}
       </div>
-      <p className="mt-2 text-[10px] leading-4 text-gray-400">
+      <p className="mt-2 text-[10px] leading-4 text-slate-400">
         Directional context only; these indicators do not directly forecast an individual property price.
       </p>
-    </div>
-  );
-}
-
-function AboutPredictionCard() {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 min-h-[164px]">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">About This Prediction</h3>
-      <p className="text-xs leading-5 text-gray-500">
-        This price is predicted using a machine learning model trained on historical
-        house sale data from different locations in Nepal.
-      </p>
-      <div className="mt-4 rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-800">
-        Model Accuracy (R² Score): 0.7287
-      </div>
-      <div className="mt-2 text-xs text-gray-400">
-        Predicted on: {new Date().toLocaleDateString("en-IN", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </div>
     </div>
   );
 }
@@ -243,25 +259,41 @@ function AlternativeLocationsCard({ result, locationLabel }) {
 }
 
 export default function PredictionDashboard({ result, form, locationLabel }) {
+  const [propertyPoint, setPropertyPoint] = useState(null);
+  const [mapFacilities, setMapFacilities] = useState([]);
+  const [selectedFacility, setSelectedFacility] = useState(null);
+
   return (
     <div className="grid grid-cols-12 gap-3">
-      <div className="col-span-12">
+      <div className="col-span-12 lg:col-span-5">
         <EstimatedPriceCard result={result} locationLabel={locationLabel} />
       </div>
-      <div className="col-span-6">
-        <KeyFactorsCard result={result} form={form} locationLabel={locationLabel} />
+      <div className="col-span-12 lg:col-span-7">
+        <LocationMap
+          locationLabel={locationLabel}
+          onCoordinateChange={setPropertyPoint}
+          onCoordinateConfirm={setPropertyPoint}
+          facilities={mapFacilities}
+          selectedFacility={selectedFacility}
+          onFacilitySelect={setSelectedFacility}
+        />
       </div>
-      <div className="col-span-6">
-        <MacroIndicatorsCard />
-      </div>
-      {!result && <div className="col-span-6"><LocationMap locationLabel={locationLabel} compact /></div>}
-      <div className="col-span-6">
-        <AboutPredictionCard />
-      </div>
-      <div className="col-span-12">
-        <AlternativeLocationsCard result={result} locationLabel={locationLabel} />
-      </div>
-      {result && <div className="col-span-12"><InfrastructureAnalysis locationLabel={locationLabel} /></div>}
+      {result && <div className="col-span-12"><InfrastructureAnalysis
+          locationLabel={locationLabel}
+          pointOverride={propertyPoint}
+          hideMap
+          onMapFacilitiesChange={setMapFacilities}
+          onFacilityFocusChange={setSelectedFacility}
+        /></div>}
+      {result && <div className="col-span-12 lg:col-span-6">
+          <KeyFactorsCard result={result} form={form} locationLabel={locationLabel} />
+        </div>}
+      {result && <div className="col-span-12 lg:col-span-6">
+          <MacroIndicatorsCard />
+        </div>}
+      {result && <div className="col-span-12">
+          <AlternativeLocationsCard result={result} locationLabel={locationLabel} />
+        </div>}
     </div>
   );
 }

@@ -95,8 +95,8 @@ export default function PredictForm() {
         });
 
     return (
-        <div className="mx-auto max-w-[1240px]">
-            <div className="mx-3 mt-3 relative h-44 rounded-xl bg-cover bg-center overflow-hidden shadow-sm border border-blue-100" style={{ backgroundImage: `linear-gradient(90deg, rgba(248,250,252,0.98) 0%, rgba(248,250,252,0.9) 34%, rgba(248,250,252,0.12) 72%), url(${HERO_IMAGE})` }}>
+        <div className="mx-auto w-full max-w-[1540px]">
+            <div className="mx-2 mt-3 relative h-44 rounded-xl bg-cover bg-center overflow-hidden shadow-sm border border-blue-100" style={{ backgroundImage: `linear-gradient(90deg, rgba(248,250,252,0.98) 0%, rgba(248,250,252,0.9) 34%, rgba(248,250,252,0.12) 72%), url(${HERO_IMAGE})` }}>
                 <div className="absolute inset-0 flex items-center px-9">
                     <div className="text-slate-900 max-w-md">
                         <h1 className="text-[34px] font-bold leading-tight">
@@ -109,11 +109,15 @@ export default function PredictForm() {
                 </div>
             </div>
 
-            <div className="px-3 py-3 grid grid-cols-[430px_minmax(0,1fr)] gap-4 items-start">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-h-[560px]">
-                    <h2 className="text-blue-700 font-semibold text-lg mb-5 flex items-center gap-2">
-                        👤 Enter House Details
-                    </h2>
+            <div className="px-2 py-4 grid grid-cols-1 xl:grid-cols-[390px_minmax(0,1fr)] gap-3 items-start">
+                <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 min-h-[560px]">
+                    <div className="mb-6 flex items-start gap-3 border-b border-slate-100 pb-4">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">1</span>
+                        <div>
+                            <h2 className="text-base font-semibold text-slate-900">Property details</h2>
+                            <p className="mt-1 text-xs leading-5 text-slate-500">Enter the property information used for the price estimate.</p>
+                        </div>
+                    </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="relative">
@@ -263,7 +267,7 @@ export default function PredictForm() {
 
                         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
                     </form>
-                </div>
+                </section>
 
                 <div className="min-w-0">
                     <PredictionDashboard

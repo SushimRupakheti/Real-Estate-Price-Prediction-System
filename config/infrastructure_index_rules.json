@@ -1,0 +1,154 @@
+{
+  "version": "1.0.0",
+  "index_name": "Infrastructure Health Index",
+  "missing_indicator_score": 0,
+  "classifications": [
+    {"min_score": 85, "label": "Excellent"},
+    {"min_score": 70, "label": "Very Good"},
+    {"min_score": 55, "label": "Good"},
+    {"min_score": 35, "label": "Moderate"},
+    {"min_score": 0, "label": "Limited"}
+  ],
+  "category_weights": {
+    "accessibility": 0.22,
+    "education": 0.18,
+    "healthcare": 0.18,
+    "commerce": 0.15,
+    "public_transport": 0.17,
+    "recreation": 0.10
+  },
+  "categories": {
+    "accessibility": {
+      "label": "Accessibility",
+      "description": "Proximity and type of mapped road access.",
+      "components": [
+        {"indicator": "nearest_road_distance_m", "label": "Nearest road", "type": "lower_is_better", "weight": 0.35, "unit": "m", "bands": [
+          {"max": 25, "score": 100, "rule": "Nearest mapped road within 25 m"},
+          {"max": 75, "score": 85, "rule": "Nearest mapped road within 75 m"},
+          {"max": 200, "score": 65, "rule": "Nearest mapped road within 200 m"},
+          {"max": 500, "score": 40, "rule": "Nearest mapped road within 500 m"},
+          {"max": null, "score": 15, "rule": "Nearest mapped road farther than 500 m"}
+        ]},
+        {"indicator": "nearest_major_road_distance_m", "label": "Nearest major road", "type": "lower_is_better", "weight": 0.40, "unit": "m", "bands": [
+          {"max": 250, "score": 100, "rule": "Major road within 250 m"},
+          {"max": 500, "score": 90, "rule": "Major road within 500 m"},
+          {"max": 1000, "score": 70, "rule": "Major road within 1 km"},
+          {"max": 2000, "score": 45, "rule": "Major road within 2 km"},
+          {"max": null, "score": 20, "rule": "Major road farther than 2 km"}
+        ]},
+        {"indicator": "nearest_major_road_type", "label": "Major road class", "type": "categorical", "weight": 0.25, "scores": {
+          "motorway": {"score": 100, "rule": "Nearest major road is motorway"},
+          "trunk": {"score": 95, "rule": "Nearest major road is trunk"},
+          "primary": {"score": 90, "rule": "Nearest major road is primary"},
+          "secondary": {"score": 75, "rule": "Nearest major road is secondary"}
+        }}
+      ]
+    },
+    "education": {
+      "label": "Education",
+      "description": "Availability of mapped educational facilities within their configured radii.",
+      "components": [
+        {"indicator": "schools", "label": "Schools within 1 km", "type": "higher_is_better", "weight": 0.55, "unit": "places", "bands": [
+          {"min": 10, "score": 100, "rule": "At least 10 schools within 1 km"},
+          {"min": 5, "score": 80, "rule": "At least 5 schools within 1 km"},
+          {"min": 2, "score": 55, "rule": "At least 2 schools within 1 km"},
+          {"min": 1, "score": 30, "rule": "One school within 1 km"},
+          {"min": 0, "score": 0, "rule": "No mapped schools within 1 km"}
+        ]},
+        {"indicator": "colleges", "label": "Colleges within 1 km", "type": "higher_is_better", "weight": 0.30, "unit": "places", "bands": [
+          {"min": 4, "score": 100, "rule": "At least 4 colleges within 1 km"},
+          {"min": 2, "score": 75, "rule": "At least 2 colleges within 1 km"},
+          {"min": 1, "score": 45, "rule": "One college within 1 km"},
+          {"min": 0, "score": 0, "rule": "No mapped colleges within 1 km"}
+        ]},
+        {"indicator": "kindergartens", "label": "Kindergartens within 1 km", "type": "higher_is_better", "weight": 0.15, "unit": "places", "bands": [
+          {"min": 3, "score": 100, "rule": "At least 3 kindergartens within 1 km"},
+          {"min": 2, "score": 75, "rule": "At least 2 kindergartens within 1 km"},
+          {"min": 1, "score": 45, "rule": "One kindergarten within 1 km"},
+          {"min": 0, "score": 0, "rule": "No mapped kindergartens within 1 km"}
+        ]}
+      ]
+    },
+    "healthcare": {
+      "label": "Healthcare",
+      "description": "Availability of hospital- and clinic-tagged places; pharmacies are excluded.",
+      "components": [
+        {"indicator": "hospitals", "label": "Hospital-tagged places within 2 km", "type": "higher_is_better", "weight": 0.65, "unit": "places", "bands": [
+          {"min": 5, "score": 100, "rule": "At least 5 hospital-tagged places within 2 km"},
+          {"min": 3, "score": 80, "rule": "At least 3 hospital-tagged places within 2 km"},
+          {"min": 1, "score": 50, "rule": "At least one hospital-tagged place within 2 km"},
+          {"min": 0, "score": 0, "rule": "No mapped hospital-tagged places within 2 km"}
+        ]},
+        {"indicator": "clinics", "label": "Clinic-tagged places within 2 km", "type": "higher_is_better", "weight": 0.35, "unit": "places", "bands": [
+          {"min": 8, "score": 100, "rule": "At least 8 clinic-tagged places within 2 km"},
+          {"min": 4, "score": 80, "rule": "At least 4 clinic-tagged places within 2 km"},
+          {"min": 1, "score": 45, "rule": "At least one clinic-tagged place within 2 km"},
+          {"min": 0, "score": 0, "rule": "No mapped clinic-tagged places within 2 km"}
+        ]}
+      ]
+    },
+    "commerce": {
+      "label": "Commerce",
+      "description": "Availability of mapped marketplaces, supermarkets, and banks within 1 km.",
+      "components": [
+        {"indicator": "marketplaces", "label": "Marketplaces within 1 km", "type": "higher_is_better", "weight": 0.35, "unit": "places", "bands": [
+          {"min": 3, "score": 100, "rule": "At least 3 marketplaces within 1 km"},
+          {"min": 2, "score": 80, "rule": "At least 2 marketplaces within 1 km"},
+          {"min": 1, "score": 50, "rule": "One marketplace within 1 km"},
+          {"min": 0, "score": 0, "rule": "No mapped marketplaces within 1 km"}
+        ]},
+        {"indicator": "supermarkets", "label": "Supermarkets within 1 km", "type": "higher_is_better", "weight": 0.35, "unit": "places", "bands": [
+          {"min": 4, "score": 100, "rule": "At least 4 supermarkets within 1 km"},
+          {"min": 2, "score": 75, "rule": "At least 2 supermarkets within 1 km"},
+          {"min": 1, "score": 45, "rule": "One supermarket within 1 km"},
+          {"min": 0, "score": 0, "rule": "No mapped supermarkets within 1 km"}
+        ]},
+        {"indicator": "banks", "label": "Bank-tagged places within 1 km", "type": "higher_is_better", "weight": 0.30, "unit": "places", "bands": [
+          {"min": 8, "score": 100, "rule": "At least 8 bank-tagged places within 1 km"},
+          {"min": 4, "score": 75, "rule": "At least 4 bank-tagged places within 1 km"},
+          {"min": 1, "score": 40, "rule": "At least one bank-tagged place within 1 km"},
+          {"min": 0, "score": 0, "rule": "No mapped bank-tagged places within 1 km"}
+        ]}
+      ]
+    },
+    "public_transport": {
+      "label": "Public Transport",
+      "description": "Mapped bus-stop availability and access to the major-road network.",
+      "components": [
+        {"indicator": "bus_stops", "label": "Bus stops within 1 km", "type": "higher_is_better", "weight": 0.55, "unit": "places", "bands": [
+          {"min": 8, "score": 100, "rule": "At least 8 bus stops within 1 km"},
+          {"min": 4, "score": 80, "rule": "At least 4 bus stops within 1 km"},
+          {"min": 2, "score": 55, "rule": "At least 2 bus stops within 1 km"},
+          {"min": 1, "score": 30, "rule": "One bus stop within 1 km"},
+          {"min": 0, "score": 0, "rule": "No mapped bus stops within 1 km"}
+        ]},
+        {"indicator": "nearest_major_road_distance_m", "label": "Nearest major road", "type": "lower_is_better", "weight": 0.30, "unit": "m", "bands": [
+          {"max": 250, "score": 100, "rule": "Major road within 250 m"},
+          {"max": 500, "score": 85, "rule": "Major road within 500 m"},
+          {"max": 1000, "score": 60, "rule": "Major road within 1 km"},
+          {"max": 2000, "score": 35, "rule": "Major road within 2 km"},
+          {"max": null, "score": 10, "rule": "Major road farther than 2 km"}
+        ]},
+        {"indicator": "nearest_major_road_type", "label": "Major road class", "type": "categorical", "weight": 0.15, "scores": {
+          "motorway": {"score": 100, "rule": "Nearest major road is motorway"},
+          "trunk": {"score": 95, "rule": "Nearest major road is trunk"},
+          "primary": {"score": 90, "rule": "Nearest major road is primary"},
+          "secondary": {"score": 75, "rule": "Nearest major road is secondary"}
+        }}
+      ]
+    },
+    "recreation": {
+      "label": "Recreation",
+      "description": "Availability of mapped parks within 2 km.",
+      "components": [
+        {"indicator": "parks", "label": "Parks within 2 km", "type": "higher_is_better", "weight": 1.0, "unit": "places", "bands": [
+          {"min": 8, "score": 100, "rule": "At least 8 parks within 2 km"},
+          {"min": 4, "score": 80, "rule": "At least 4 parks within 2 km"},
+          {"min": 2, "score": 55, "rule": "At least 2 parks within 2 km"},
+          {"min": 1, "score": 30, "rule": "One park within 2 km"},
+          {"min": 0, "score": 0, "rule": "No mapped parks within 2 km"}
+        ]}
+      ]
+    }
+  }
+}

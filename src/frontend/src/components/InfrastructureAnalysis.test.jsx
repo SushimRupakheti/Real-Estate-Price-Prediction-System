@@ -4,6 +4,7 @@ import InfrastructureAnalysis from "./InfrastructureAnalysis";
 
 jest.mock("axios");
 jest.mock("./LocationMap", () => ({ onCoordinateConfirm, facilities = [], selectedFacility, onFacilitySelect }) => <div><button onClick={() => onCoordinateConfirm({ lat: 27.7, lon: 85.3 })}>Choose point</button>{facilities[0] && <button onClick={() => onFacilitySelect(facilities[0])}>Select map facility</button>}<span data-testid="highlighted-facility">{selectedFacility?.name || "none"}</span></div>);
+jest.mock("./InfrastructureHealthIndex", () => () => <div>Infrastructure Health Index</div>);
 
 const empty = { raw_count: 0, deduplicated_count: 0, radius_m: 1000, places: [] };
 const school = { name: "School A", osm_id: 10, osm_type: "node", latitude: 27.701, longitude: 85.301, distance_m: 120, tags: { amenity: "school" } };

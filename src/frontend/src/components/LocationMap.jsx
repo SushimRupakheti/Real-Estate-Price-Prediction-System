@@ -82,10 +82,13 @@ export default function LocationMap({ locationLabel, compact = false, onCoordina
 
   const confirm = () => { setConfirmed(true); onCoordinateConfirm?.(point); };
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="px-4 py-3 border-b border-gray-100">
-        <h3 className="text-sm font-semibold text-gray-700">Select exact property point</h3>
-        <p className="text-[11px] text-gray-500 mt-1">{geocoding ? "Locating the entered area..." : "Click the map to move the marker, then confirm the coordinates."}</p>
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">3</span>
+        <div>
+          <h3 className="text-sm font-semibold text-slate-800">Select the exact property location</h3>
+          <p className="text-[11px] text-slate-500 mt-1">{geocoding ? "Locating the entered area..." : "Click the map to move the marker, then confirm the coordinates."}</p>
+        </div>
       </div>
       <MapContainer center={[point.lat, point.lon]} zoom={initial.zoom || 14} className={`w-full ${compact ? "h-[220px]" : "h-72"}`}>
         <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -97,7 +100,7 @@ export default function LocationMap({ locationLabel, compact = false, onCoordina
         <p className="text-xs text-gray-600" data-testid="selected-coordinates">
           Lat {point.lat.toFixed(6)}, Lon {point.lon.toFixed(6)}
         </p>
-        <button type="button" onClick={confirm} className="bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-semibold">
+        <button type="button" onClick={confirm} className="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-slate-800 transition-colors">
           {confirmed ? "Point confirmed" : "Confirm property point"}
         </button>
       </div>
