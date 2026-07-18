@@ -33,7 +33,6 @@ function EstimatedPriceCard({ result, locationLabel }) {
     return (
       <section className="h-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-start gap-3">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">2</span>
           <div>
             <h2 className="text-base font-semibold text-slate-900">Estimated current price</h2>
             <p className="mt-1 text-sm leading-6 text-slate-500">
@@ -53,7 +52,6 @@ function EstimatedPriceCard({ result, locationLabel }) {
     <section className="h-full rounded-2xl border border-blue-200 bg-white p-6 shadow-sm ring-1 ring-blue-50">
       <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
         <div className="flex items-start gap-3">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-700 text-xs font-semibold text-white">2</span>
           <div>
             <h2 className="text-base font-semibold text-slate-900">Estimated current price</h2>
             <p className="mt-1 text-xs text-slate-500">Present-day model estimate</p>
@@ -105,20 +103,20 @@ function KeyFactorsCard({ result, form, locationLabel }) {
     : fallback;
 
   return (
-    <div className="h-full rounded-2xl border border-blue-200 bg-gradient-to-br from-white to-blue-50/70 p-5 shadow-sm">
+    <div className="h-full rounded-2xl border border-indigo-200 border-l-4 border-l-indigo-600 bg-gradient-to-br from-white via-white to-indigo-50 p-5 shadow-md shadow-indigo-900/5 ring-1 ring-indigo-50">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div><h3 className="text-sm font-semibold text-slate-900">
         Why this estimate?
       </h3>
       <p className="mt-1 text-xs text-slate-500">Strongest model factors for this property</p></div>
-      <span className="rounded-full bg-blue-100 px-2.5 py-1 text-[10px] font-semibold text-blue-700">SHAP</span></div>
+      <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-[10px] font-semibold text-indigo-700">MODEL EXPLANATION · SHAP</span></div>
       <div className="space-y-3">
         {rows.map((row) => (
           <div key={row.feature} className="grid grid-cols-[minmax(0,1fr)_96px_34px] items-center gap-2 text-xs">
             <span className="text-slate-700 truncate">{row.label}</span>
             <div className="h-1.5 rounded-full bg-slate-100">
               <div
-                className="h-1.5 rounded-full bg-blue-600"
+                className="h-1.5 rounded-full bg-indigo-600"
                 style={{ width: `${Math.min(row.pct, 100)}%` }}
               />
             </div>

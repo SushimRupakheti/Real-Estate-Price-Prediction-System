@@ -24,25 +24,24 @@ export default function InfrastructureHealthIndex({ analysis, onIndexCalculated 
   }, [analysis, onIndexCalculated]);
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-emerald-200 border-l-4 border-l-emerald-600 bg-gradient-to-br from-white to-emerald-50/40 p-5 shadow-md shadow-emerald-900/5">
       <div className="flex flex-col gap-4 border-b border-blue-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">5</span>
           <div>
             <h3 className="text-sm font-semibold text-slate-900">Infrastructure Health Index</h3>
             <p className="mt-1 text-xs leading-5 text-slate-500">Overall infrastructure quality from current OSM-mapped indicators.</p>
           </div>
         </div>
         {index && <div className="text-left sm:text-right">
-          <p className="text-3xl font-bold text-blue-800">{index.overall_score}<span className="text-sm font-medium text-slate-400">/100</span></p>
-          <p className="mt-1 inline-block rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">{index.classification}</p>
+          <p className="text-3xl font-bold text-emerald-800">{index.overall_score}<span className="text-sm font-medium text-slate-400">/100</span></p>
+          <p className="mt-1 inline-block rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">{index.classification}</p>
         </div>}
       </div>
 
       {loading && <div className="py-8 text-center text-sm text-slate-500">Calculating the rule-based index...</div>}
       {error && <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       {index && <>
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-blue-100"><div className="h-full rounded-full bg-blue-600" style={{ width: `${index.overall_score}%` }} /></div>
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-emerald-100"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${index.overall_score}%` }} /></div>
         <details className="mt-5 rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer text-sm font-semibold text-slate-700">Infrastructure Health Index explanation</summary><div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {Object.values(index.categories).map((category) => (
             <details key={category.key} className="group rounded-xl border border-slate-200 bg-white p-4">

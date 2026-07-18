@@ -1,0 +1,518 @@
+1
+Abstract
+This proposal focuses on Nepal and aims to build an explainable machine-learning model to
+predict short-term residential property value shifts (%) in major cities. It will combine
+macro drivers like interest rates, inflation, and credit conditions with listing or transaction-
+proxy data, as well as location and amenity data from open geospatial data. The project will
+use an Agile process and the CRISP-DM methodology to prepare data, build features relevant
+to change, and compare baseline regression with boosted tree models. We will employ time-
+aware validation to check performance, and we will use SHAP to explain the results so that
+everyone can see them. Some of the things that will be delivered are a forecasting pipeline, a
+short "drivers of change" report, and a simple interface or API prototype.
+Keywords:
+
+Figure 1: Keywords
+
+                                                                                                                    2
+Table of Contents
+
+Introduction ............................................................................................................................................................ 5
+Motivation................................................................................................................................................................ 6
+Behavioral Biases in Nepal's Residential Property Market .................................................................. 6
+Aim and Objectives............................................................................................................................................... 6
+
+   Aim ......................................................................................................................................................................... 6
+   Objectives ............................................................................................................................................................ 7
+Justification.............................................................................................................................................................. 7
+Research Questions .............................................................................................................................................. 7
+Hypotheses .............................................................................................................................................................. 8
+Research Methodology........................................................................................................................................ 8
+   Desk Based Agile Research Approach ...................................................................................................... 8
+   Data Collection Strategy ................................................................................................................................ 9
+   Analysis Framework ....................................................................................................................................... 9
+Literature Review .............................................................................................................................................. 10
+   Statistical and economic approaches to housing value .................................................................. 10
+   Machine learning for nonlinear patterns ............................................................................................. 10
+   Explainability, drift, and responsible use ............................................................................................ 10
+   Case Studies..................................................................................................................................................... 11
+Integration of Tools, Technologies and Techniques............................................................................. 12
+   Programming and Analysis Environment ........................................................................................... 12
+   Statistical and Machine Learning Techniques.................................................................................... 12
+Conclusion............................................................................................................................................................. 16
+References ............................................................................................................................................................ 17
+Appendix ............................................................................................................................................................... 19
+   SWOT Analysis: .............................................................................................................................................. 19
+   Risk Log:............................................................................................................................................................ 19
+
+                                                                                                                    3
+Table of Figures:
+
+Figure 1: Keywords .............................................................................................................................................. 2
+Figure 2: Introductory Image ........................................................................................................................... 5
+Figure 3: Gantt Chart ........................................................................................................................................... 9
+Figure 4: Data Pipeline Architecture .......................................................................................................... 14
+Figure 5: Feature Engineering Framework ............................................................................................. 15
+Figure 6: Model Comparison Framework................................................................................................. 15
+Figure 7: SWOT Analysis ................................................................................................................................. 19
+
+Table of Tables:
+
+Table 1: Literature Summary ................................................................................................... 12
+Table 2: Technology Stack......................................................................................................... 13
+Table 3: Risk Log ........................................................................................................................ 19
+
+                                                                                                                    4
+Introduction
+
+In Nepal, owning land and homes is not just a way to get shelter, but also a way for families
+to secure their investments and generate wealth over time. Interest rates, liquidity,
+remittance flows, infrastructural development, limited availability, and changing
+neighborhood reputation can all cause property values to alter swiftly in big cities. Valuation
+frequently depends on informal information and comparable sales, which may not adapt
+swiftly to altering local conditions. Hedonic modelling elucidates prices via property
+characteristics such as size, type, and location (Rosen, 1974), although it may overlook
+intricate nonlinear correlations. Machine learning algorithms like XGBoost and LightGBM
+can better find these kinds of patterns (Chen & Guestrin, 2016). This project forecasts
+percentage value fluctuations with elucidated outcomes.
+
+Figure 2: Introductory Image
+
+                                                                                                                    5
+Motivation
+
+The motivation for this project comes from the interest in property markets and data-driven
+decision making. Buying or selling of property in Nepal, is a family's biggest financial
+decision, so fair pricing and future value growth matter a lot. Yet common drivers like
+location, road access, and nearby facilities are usually discussed informally and are hard to
+measure consistently. This project employs data science to look at property-related data and
+find clearer patterns. For example, it looks at which locations respond well to infrastructure
+upgrades and which attributes cause short-term value fluctuations. It tries to show how the
+market changes over time by looking at percentage movements instead of just price levels.
+It also uses basic skills like data preparation, modelling, and explainability in a way that is
+useful and relevant to society.
+
+Behavioral Biases in Nepal's Residential Property Market
+
+Owning property in Nepal is more than just having a place to live but it is one of the most
+important ways families secure their savings and plan for the future. Property prices in cities
+can rise or fall quickly due to changes in interest rates, remittances, new infrastructure, or
+shifts in neighborhood demand. Traditional valuation methods do not always have this
+information. This project uses machine learning to predict percentage value shifts in a way
+that is clear, understandable, and practical.
+
+Aim and Objectives
+
+Aim
+
+To design, develop, and evaluate an explainable machine learning system that predicts short
+term residential real estate value shifts in Nepal's major cities and clearly communicates the
+key drivers behind those changes to support transparent decision making.
+
+                                                                                                                    6
+Objectives
+
+    1. To learn and understand macro-financial and urban drivers of short-term residential
+         value shifts in Nepal, including interest rates, liquidity, remittances, and accessibility.
+
+    2. To learn and understand hedonic pricing theory, baseline models and how spatial and
+         time variation affect forecasting.
+
+    3. To learn and understand explainable AI methods and ethical risks, especially where
+         location features may act as socio-economic proxies.
+
+    4. To design a forecasting pipeline that combines listing/market data, Nepal Rastra
+         Bank indicators, and geospatial features, and benchmarks baselines against boosted
+         trees using time-aware validation.
+
+    5. To evaluate performance and understandability over time periods and city segments,
+         deliver a basic dashboard/API for forecasts and drivers and finish the final report
+         with restrictions and suggestions.
+
+Justification
+
+This research is justified because properties are a big asset for families in Nepal, but prices
+are often based on unofficial information that may not keep up with changes in the economy
+and local development. Due to scarce and noisy data, substantial differences between cities
+and wards, and overlapping factors like remittances, loans, and infrastructure change,
+predicting short-term value changes is also a serious data science task. The project is strong
+from an academic point of view because it compares hedonic baselines with boosted tree
+models using time-aware validation and adds explainability to help with interpretation.
+Ethically, it deals with problems where location features could be used as socio-economic
+proxies by integrating auditing and responsible-use advice.
+
+Research Questions
+
+The following research questions will guide the investigation:
+
+                                                                                                                    7
+    1. RQ1: To what extent can property attributes, Nepal Rastra Bank macro financial
+         indicators, and open geospatial features predict short term residential value shifts
+         (%) in Nepal's major cities?
+
+    2. RQ2: What ethical risks arise when using location-based variables in residential value
+         shift forecasting, and how can explainability and auditing be used to identify and
+         mitigate proxy and misuse risks?
+
+    3. RQ3: How stable and transferable are the learned relationships (feature importance
+         and model performance) across different cities and time windows in Nepal (e.g.,
+         Kathmandu vs. Pokhara), and what retraining or recalibration strategy is needed to
+         maintain accuracy under market drift?
+
+Hypotheses
+
+Based on preliminary literature review, the following hypotheses are proposed:
+
+H1: Boosted tree ensemble models using engineered spatial, temporal, and macro features
+will outperform hedonic and regularized linear baselines in predicting short term value
+shifts (%) under out of time validation.
+
+H2: Explainability and stability checks will improve transparency by revealing key drivers
+and detecting when predictions rely too heavily on location proxies, supporting more
+responsible use.
+
+Research Methodology
+
+Desk Based Agile Research Approach
+
+This research will use a desk based agile methodology. All data will come from secondary
+sources such as property listings/market records, Nepal Rastra Bank indicators and open
+geospatial datasets, so no human participant data collection is required. An agile approach
+works well because data coverage and quality may vary by city and time, so work will be
+done in two-week sprints with iterative updates to the dataset, features, and models based
+on findings.
+
+                                                                                                                    8
+Data Collection Strategy
+
+Data will be integrated from three sources: property listing or market data for prices, dates,
+and basic attributes; Nepal Rastra Bank macro financial indicators aligned by month or
+quarter; and open geospatial data for accessibility and amenity features. Cleaning will take
+care of missing numbers, inconsistent positions, duplicates, and outliers. Using the same
+method of calculation, the goal variable will be defined as a short-term value shift (%) over
+a set period of time, such as 3 to 6 months.
+
+Analysis Framework
+
+First, data exploration will be conducted to examine how prices and value shifts vary
+across locations and over time. Next, a simple baseline model will be built using hedonic
+regression and regularized linear methods. After that, more advanced boosted tree models,
+such as XGBoost and LightGBM, will be trained to capture nonlinear relationships. All models
+will be evaluated using time-aware rolling or expanding window validation, reporting errors
+(for example, MAE and RMSE for %) and comparing performance across cities and
+neighborhood segments. Finally, the predictions will be explained, and stability and drift
+across time windows will be examined using SHAP, with the results presented through a
+simple dashboard or API.
+
+Figure 3: Gantt Chart
+
+                                                                                                                    9
+Literature Review
+
+Statistical and economic approaches to housing value
+
+Real estate economics models value as an attribute bundle (Rosen, 1974). Rosen's hedonic
+framework supports regression baselines that connect size, type, and location to value, but
+the results can change depending on the functional form and may not perform as well in
+markets with a lot of different types of goods or when the quality of the neighborhood is not
+known. To track change over time, housing price index research discusses repeat-sales and
+hedonic-adjusted indices to measure appreciation while managing heterogeneity (Case &
+Shiller, 1987; Eurostat et al., 2013). In Nepal, institutional measurement further highlights
+the need for clear definitions of "change" and consistent time windows (Nepal Rastra Bank,
+2021).
+
+Machine learning for nonlinear patterns
+
+While hedonic models are interpretable, machine learning can improve accuracy on tabular
+data by capturing nonlinear relationships and feature interactions. Gradient-boosted
+decision trees, especially XGBoost and LightGBM, are widely used due to strong performance
+and efficiency. Previous housing prediction studies frequently identify boosted models as
+competitive, so validating their application as benchmarks against hedonic and regularized
+linear baselines..
+
+Explainability, drift, and responsible use
+
+Explainability is important because forecasts can affect decisions that have a big impact.
+SHAP is commonly used to show how features contribute to predictions, both overall and for
+individual cases (Lundberg & Lee, 2017). Since markets change, drift and stability check
+across time windows and city segments are important for realistic evaluation (Gama et al.,
+2014). Ethical risks are particularly important because geography can be a stand-in for
+disparities in social and economic status. Clear documentation, such model cards, helps
+explain how the model is supposed to be used, what its limits are, and how its performance
+can change (Barocas & Selbst, 2016; Mitchell et al., 2019).
+
+                                                                                                                  10
+Case Studies
+
+Case Study 1: Zillow Zestimate
+
+Zillow's Zestimate is a consumer facing automated valuation output produced using
+proprietary machine learning that blends property attributes, historical sales signals, and
+local market conditions. The main lesson is that such estimates influence decisions only
+when limitations are communicated clearly and models are updated as markets change.
+(Zillow Group, 2024)
+
+Case Study 2: Redfin Estimate
+
+Redfin's estimate is embedded within a listing and brokerage workflow, where users view it
+alongside comparables and neighborhood trends. This supports delivering forecasts through
+a simple interface that fits real tasks such as pricing and negotiation, while also highlighting
+the dependence on timely and well covered data (Redfin, 2024).
+
+Case Study 3: CoreLogic AVMs
+
+CoreLogic provides AVMs commonly used by lenders and agents for appraisal support and
+risk management. The key takeaway is the value of operational safeguards, including data
+quality checks, confidence indicators, and monitoring for drift, particularly when outputs
+inform high impact decisions (CoreLogic, 2023).
+
+Case Study 4: CBRE analytics systems
+
+CBRE's AI driven analytics focus on market insight and forecasting to support investment
+and valuation reasoning, often at area or portfolio level. This aligns with the project focus on
+predicting short term value shifts and reporting drivers of change, reinforcing the need for
+explanation as part of the output (CBRE, 2023).
+
+Table 1: Literature Summary
+
+      Author(s)            Approach                       Key contribution
+                   Hedonic pricing theory  Attribute bundle framework for housing
+    Rosen (1974)
+                    Housing price index                        valuation
+Nepal Rastra Bank           methods        Institutional basis for consistent housing
+       (2021).              XGBoost
+                                                   price change measurement
+  Chen & Guestrin                           Efficient gradient boosting for tabular
+        (2016)
+                                                              prediction
+
+                                           11
+Ke et al. (2017)          LightGBM         Faster gradient boosting with competitive
+                    SHAP explainability                         accuracy
+Lundberg & Lee    Fairness and proxy risk
+      (2017)                                    Transparent feature contribution
+                                                             explanations
+Barocas & Selbst
+      (2016)                                 How models can reproduce disparate
+                                                         impacts via proxies
+
+Integration of Tools, Technologies and Techniques
+
+The successful completion of this project requires integrating software tools, data sources,
+and analytical techniques chosen for suitability to Nepal's data constraints, learning value,
+and reproducibility. The system will combine structured property attributes, macro financial
+signals, and geospatial context to predict short term residential value shifts (%), while
+adding explainability so outputs can be audited and communicated clearly.
+
+Programming and Analysis Environment
+
+Python will be the primary language for data preparation, modelling, and evaluation. Core
+libraries like Pandas and NumPy are used for data handling, scikit learn for pipelines and
+baseline models, and Stats models for hedonic regression. Geospatial processing will use
+GeoPandas (and optionally OSMnx) to create accessibility and amenity proximity features
+from open map data. Visualization will be done using Matplotlib. Jupyter Notebooks will
+support exploratory analysis and documentation, while production code will be organized
+into Python scripts with Git for version control to ensure reproducibility.
+
+Statistical and Machine Learning Techniques
+
+The baseline will use hedonic regression (with log transforms and time/area controls where
+needed) and regularized linear models such as ridge and elastic net to handle
+multicollinearity. Boosted tree models (XGBoost and LightGBM) will be benchmarked to
+capture nonlinear patterns and feature interactions. Models will be evaluated using time-
+aware validation with rolling or expanding windows. SHAP will be used for explainability
+
+                                                                                                                  12
+through global driver summaries and local case explanations, supported by stability and drift
+checks across time periods and city or neighborhood segments to reduce reliance on proxy
+features.
+
+Table 2: Technology Stack
+
+Category          Tool or Technology                            Purpose
+
+  Programming                  Python 3.x              Primary development language
+  Data handling             Pandas, NumPy          Cleaning, transformation, computation
+
+     Statistics               Stats models               Hedonic regression baselines
+Machine Learning  scikit learn, XGBoost, LightGBM    Baselines, boosted tree forecasting
+                                                    Spatial joins, distances, accessibility
+Geospatial        GeoPandas (optional OSMnx)
+                                                                      features
+Explainability              SHAP                   Driver attribution and model auditing
+Visualization            Matplotlib
+ Experiment                                          Plots, diagnostics, reporting figures
+                  Git (optional MLflow)
+   Tracking                                            Reproducibility and versioning
+
+Protype delivery  Streamlit or FastAPI               Dashboard or API for forecasts and
+                                                                       drivers
+Data sources        Listing or market data, NRB
+                  indicators, OpenStreetMap and     Inputs for price shifts, macro signals,
+                                                                  spatial context
+                           boundary layers
+
+                                                   13
+Figure 4: Data Pipeline Architecture
+
+                                                                                                                  14
+Figure 5: Feature Engineering Framework
+
+Figure 6: Model Comparison Framework
+
+                                                                                                                  15
+Conclusion
+
+This project will provide an explainable forecasting system that uses property and market
+data, NRB macro indicators, and open geospatial features to anticipate short-term changes
+in the value of residential properties (%) in Nepal's major cities. Using time-aware
+validation, it will compare hedonic and regularized baselines with boosted models
+(XGBoost/LightGBM). SHAP and stability checks across time and across city/ward segments
+will help make things clear and make sure they are used responsibly. The outputs are a
+lightweight dashboard/API and a report on the findings.
+
+                                                                                                                  16
+References
+
+Barocas, S., & Selbst, A. D. (2016). Big data's disparate impact. California Law Review, 104(3),
+671­732. https://www.cs.yale.edu/homes/jf/BarocasSelbst.pdf
+
+Bergmeir, C., Hyndman, R. J., & Koo, B. (2018). A note on the validity of cross-validation for
+evaluating autoregressive time series prediction. Computational Statistics & Data Analysis,
+120, 70­83. https://doi.org/10.1016/j.csda.2017.11.003
+
+Case, K. E., & Shiller, R. J. (1987). Prices of single-family homes since 1970: New indexes for
+
+four       cities.        New    England     Economic               Review,  45­56.
+
+https://econpapers.repec.org/RePEc:fip:fedbne:y:1987:i:sep:p:45-56
+
+CBRE. (n.d.). Where AI becomes real (Artificial intelligence at CBRE). Retrieved March 3, 2026,
+from https://www.cbre.com/about-us/technology/artificial-intelligence
+
+Chapman, P., Clinton, J., Kerber, R., Khabaza, T., Reinartz, T., Shearer, C., & Wirth, R. (1999).
+
+CRISP-DM            1.0:       Step-by-step  data      mining                guide.
+
+https://public.dhe.ibm.com/software/analytics/spss/documentation/modeler/14.2/es/C
+
+RISP-DM.pdf
+
+Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In Proceedings of
+
+the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (pp.
+
+785­794).           Association  for         Computing                       Machinery.
+
+https://www.kdd.org/kdd2016/papers/files/rfp0697-chenAemb.pdf
+
+CoreLogic. (2024). The 2024 federal AVM ruling (White paper) [PDF].
+https://pages.corelogic.com/hubfs/CoreLogic%20USA/Website%20PDF%20Files/MTG-
+ORG-THVx-2024%20Fed%20AVM%20Ruling-Whitepaper.pdf
+
+Eurostat, International Labour Organization, International Monetary Fund, Organisation for
+Economic Co-operation and Development, United Nations Economic Commission for Europe,
+& The World Bank. (2013). Handbook on residential property price indices (RPPIs). OECD
+Publishing.
+https://www.oecd.org/content/dam/oecd/en/publications/reports/2013/04/handbook-
+on-residential-property-price-indices_g1g2e251/9789264197183-en.pdf
+
+Gama, J., Zliobait, I., Bifet, A., Pechenizkiy, M., & Bouchachia, A. (2014). A survey on concept
+drift adaptation. ACM Computing Surveys, 46(4), Article 44, 1­37.
+https://doi.org/10.1145/2523813
+
+Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q., & Liu, T.-Y. (2017). LightGBM: A
+highly efficient gradient boosting decision tree. In Advances in Neural Information Processing
+Systems.
+
+                                                                             17
+https://proceedings.neurips.cc/paper_files/paper/2017/file/6449f44a102fde848669bdd
+9eb6b76fa-Paper.pdf
+
+Lundberg, S. M., & Lee, S.-I. (2017). A unified approach to interpreting model predictions. In
+
+Advances      in            Neural  Information       Processing   Systems.
+
+https://papers.nips.cc/paper_files/paper/2017/hash/8a20a8621978632d76c43dfd28b67
+
+767-Abstract.html
+
+Mitchell, M., Wu, S., Zaldivar, A., Barnes, P., Vasserman, L., Hutchinson, B., Spitzer, E., Raji, I.
+D., & Gebru, T. (2019). Model cards for model reporting. In Proceedings of the 2019
+Conference on Fairness, Accountability, and Transparency (pp. 220­229). Association for
+Computing Machinery. https://doi.org/10.1145/3287560.3287596
+
+Nepal Rastra Bank. (2021). Housing Price Index Survey Report.
+https://www.nrb.org.np/contents/uploads/2021/11/HPI-Survey-Report.pdf
+
+Redfin. (n.d.). About the Redfin Estimate (home value estimator). Retrieved March 3, 2026,
+from https://www.redfin.com/redfin-estimate
+
+Rosen, S. (1974). Hedonic prices and implicit markets: Product differentiation in pure
+
+competition.       Journal  of      Political    Economy,  82(1),  34­55.
+
+https://www.journals.uchicago.edu/doi/10.1086/260169
+
+Zillow Group. (n.d.). What is a Zestimate? Retrieved March 3, 2026, from
+https://www.zillow.com/zestimate/
+
+                                                                   18
+Appendix
+
+SWOT Analysis:
+
+Figure 7: SWOT Analysis
+
+Table 3: Risk Log
+
+ID  Name                       Occurrence Impact                Plan B
+
+           Data availability   Often      High    Use listing proxies + focus on
+1 (transaction/listing                                major cities + increase
+
+                 access)                           aggregation window (e.g., 6
+                                                               months).
+2   Data quality (duplicates,    Very     High
+      missing values, noisy    frequent           Apply strict cleaning/dedup
+              listings)                               rules, drop low-quality
+                                                      records, and document
+3   Feature leakage (future    Sometimes  Fatal              limitations.
+    information in training)                          Use time-aware splits,
+
+                                                  timestamp every feature, and
+                                                  remove any leaking features
+
+                                                            immediately.
+
+                                                  19
+4  Market shocks / drift     Sometimes  High  Retrain with recent windows,
+   (policy change, credit                      add drift checks, and report
+
+         tightening)                             uncertainty and validity
+                                                            period.
+
+                                              Aggregate to
+
+5  Proxy bias from location  Often      High  ward/municipality, run SHAP
+            variables                           proxy checks, and restrict
+
+                                              risky features if needed.
+
+   Licensing and privacy                        Track provenance, follow
+                                              ODbL attribution/share-alike,
+6  constraints               Rare       High
+                                                 and switch to compliant
+   (OSM/terms)                                       sources if needed.
+
+                                              Use efficient models
+
+                                              (LightGBM), reduce
+
+7 Computing power limits     Rare       Medium hyperparameter search, and
+
+                                              request college resources if
+
+                                              required.
+
+                                                                            20
+

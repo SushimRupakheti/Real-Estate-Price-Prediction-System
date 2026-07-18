@@ -25,7 +25,7 @@ function NearbyHighlights({ result }) {
     ["Bus stops within 1 km", result.categories.bus_stops.deduplicated_count],
     ["Parks within 2 km", result.categories.parks.deduplicated_count],
   ];
-  return <section className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm"><div className="flex items-start justify-between"><div><h3 className="text-sm font-semibold text-slate-900">Nearby Infrastructure Highlights</h3><p className="mt-1 text-xs text-slate-500">A concise view of current mapped infrastructure.</p></div><span className="rounded-full bg-blue-100 px-2.5 py-1 text-[10px] font-semibold text-blue-700">Current</span></div><div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">{items.map(([label, value]) => <div key={label} className="rounded-xl border border-blue-100 bg-blue-50/50 p-3"><p className="text-[11px] leading-4 text-slate-500">{label}</p><p className="mt-2 text-base font-bold capitalize text-blue-900">{value}</p></div>)}</div></section>;
+  return <section className="rounded-2xl border border-cyan-200 border-l-4 border-l-cyan-600 bg-gradient-to-br from-white to-cyan-50/40 p-5 shadow-md shadow-cyan-900/5"><div className="flex items-start justify-between"><div><h3 className="text-sm font-semibold text-slate-900">Nearby Infrastructure Highlights</h3><p className="mt-1 text-xs text-slate-500">A concise view of current mapped infrastructure.</p></div><span className="rounded-full bg-cyan-100 px-2.5 py-1 text-[10px] font-semibold text-cyan-700">CURRENT AREA</span></div><div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">{items.map(([label, value]) => <div key={label} className="rounded-xl border border-cyan-100 bg-white/80 p-3 shadow-sm"><p className="text-[11px] leading-4 text-slate-500">{label}</p><p className="mt-2 text-base font-bold capitalize text-cyan-900">{value}</p></div>)}</div></section>;
 }
 
 function AssessmentSummary({ result }) {
@@ -125,17 +125,16 @@ export default function InfrastructureAnalysis({
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">4</span>
           <div>
-            <h3 className="text-sm font-semibold text-slate-800">Nearby infrastructure</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-500">Review OSM-mapped roads and facilities around the confirmed point.</p>
+            <div className="flex flex-wrap items-center gap-2"><h3 className="text-sm font-semibold text-slate-800">Nearby Infrastructure</h3><span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${loading ? "bg-blue-100 text-blue-700" : result ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>{loading ? "Reviewing" : result ? "Ready" : "Waiting"}</span></div>
+            <p className="mt-1 text-xs leading-5 text-slate-500">Current mapped roads and facilities around the confirmed property point.</p>
           </div>
         </div>
         <button type="button" disabled={!point || loading} onClick={analyze} className="shrink-0 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-50">{loading ? "Reviewing nearby infrastructure..." : result ? "Refresh Nearby Infrastructure" : "Review Nearby Infrastructure"}</button>
       </div>
     </section>
     {!point && <p className="text-xs text-amber-700">Waiting for the map location. You can also click the map and confirm the property point.</p>}
-    {error && <p role="alert" className="bg-red-50 text-red-700 border border-red-200 rounded-lg p-3 text-sm">{error}</p>}
+    {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4"><p className="text-sm font-semibold text-red-700">{error}</p><p className="mt-1 text-xs leading-5 text-red-600">Your property-value estimate is still available. The OpenStreetMap provider may be busy; use Review Nearby Infrastructure to try again.</p></div>}
     {result && <NearbyHighlights result={result} />}
     {result && <InfrastructureHealthIndex analysis={result} onIndexCalculated={handleIndexCalculated} />}
     {result && <AssessmentSummary result={result} />}
