@@ -9,6 +9,7 @@ jest.mock("react-leaflet", () => ({
   MapContainer: ({ children }) => <div data-testid="map" onClick={() => mockMapHandlers.click?.({ latlng: { lat: 27.701234, lng: 85.301234 } })}>{children}</div>,
   TileLayer: () => <div>OpenStreetMap contributors</div>,
   CircleMarker: () => <div data-testid="marker" />,
+  Marker: () => <div data-testid="marker" />,
   Popup: ({ children }) => <div>{children}</div>,
   useMap: () => ({ setView: jest.fn(), getZoom: () => 14 }),
   useMapEvents: (handlers) => { mockMapHandlers = handlers; },

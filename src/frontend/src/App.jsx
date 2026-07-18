@@ -3,6 +3,7 @@ import PredictForm from "./components/PredictForm";
 import History from "./components/History";
 import ModelStats from "./components/ModelStats";
 import ModelCard from "./components/ModelCard";
+import CompareLocations from "./components/CompareLocations";
 
 export default function App() {
   const [activePage, setActivePage] = useState("predict");
@@ -15,8 +16,8 @@ export default function App() {
           <span className="font-semibold text-gray-800">Nepal House Predictor</span>
         </div>
 
-        <div className="flex gap-3">
-          {["predict", "history", "stats", "modelcard"].map((page) => (
+        <div className="flex gap-2 overflow-x-auto">
+          {["predict", "compare", "history", "stats", "modelcard"].map((page) => (
             <button
               key={page}
               onClick={() => setActivePage(page)}
@@ -27,7 +28,9 @@ export default function App() {
               }`}
             >
               {page === "predict"
-                ? "Predict"
+                ? "Analyse Property"
+                : page === "compare"
+                  ? "Compare Locations"
                 : page === "history"
                   ? "History"
                   : page === "stats"
@@ -39,6 +42,7 @@ export default function App() {
       </nav>
 
       {activePage === "predict" && <PredictForm />}
+      {activePage === "compare" && <CompareLocations />}
       {activePage === "history" && (
         <div className="max-w-5xl mx-auto px-6 py-8"><History /></div>
       )}

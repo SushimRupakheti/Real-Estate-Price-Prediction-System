@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import { CircleMarker, MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 const CITY_COORDINATES = {
@@ -36,7 +37,8 @@ function MapInteraction({ point, onSelect }) {
   const map = useMap();
   useEffect(() => { map.setView([point.lat, point.lon], map.getZoom()); }, [map, point]);
   useMapEvents({ click(event) { onSelect({ lat: event.latlng.lat, lon: event.latlng.lng }); } });
-  return <CircleMarker center={[point.lat, point.lon]} radius={9} pathOptions={{ color: "#1d4ed8", fillOpacity: 0.75 }} />;
+  const icon = L.divIcon({ className: "", html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:#1e3a8a;border:3px solid white;box-shadow:0 2px 8px rgba(15,23,42,.35);transform:rotate(-45deg)"></div>', iconSize: [22, 22], iconAnchor: [11, 22] });
+  return <Marker position={[point.lat, point.lon]} icon={icon} draggable eventHandlers={{ dragend(event) { const next = event.target.getLatLng(); onSelect({ lat: next.lat, lon: next.lng }); } }} />;
 }
 
 const CATEGORY_COLORS = { schools: "#2563eb", colleges: "#4f46e5", kindergartens: "#7c3aed", hospitals: "#dc2626", clinics: "#f97316", bus_stops: "#0891b2", marketplaces: "#a16207", supermarkets: "#ca8a04", banks: "#059669", parks: "#16a34a" };
@@ -56,7 +58,7 @@ function FacilityMarkers({ facilities, selectedFacility, onFacilitySelect }) {
   });
 }
 
-export default function LocationMap({ locationLabel, compact = false, onCoordinateChange, onCoordinateConfirm, facilities = [], selectedFacility = null, onFacilitySelect }) {
+export default function LocationMap({ locationLabel, compact = false, onCoordinateChange, onCoordinateConfirm, facilities = [], selectedFacility = null, onFacilitySelect, stepNumber = 3 }) {
   const initial = getCoordinates(locationLabel);
   const [point, setPoint] = useState({ lat: initial.lat, lon: initial.lon });
   const [confirmed, setConfirmed] = useState(false);
@@ -84,7 +86,7 @@ export default function LocationMap({ locationLabel, compact = false, onCoordina
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">3</span>
+        {stepNumber != null && <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">{stepNumber}</span>}
         <div>
           <h3 className="text-sm font-semibold text-slate-800">Select the exact property location</h3>
           <p className="text-[11px] text-slate-500 mt-1">{geocoding ? "Locating the entered area..." : "Click the map to move the marker, then confirm the coordinates."}</p>

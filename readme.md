@@ -25,7 +25,7 @@ Run the backend from the project root with:
 
 ## Phase 1: current infrastructure context
 
-After receiving a price estimate, a user can place and confirm an approximate property point on an interactive Leaflet/OpenStreetMap map. `POST /infrastructure/analyze` queries Overpass and returns raw current-infrastructure indicators for roads, schools, healthcare, bus stops, markets, banks, parks, and—when geometry permits—road intersections.
+Before entering property details, a user searches for a recognised area and confirms the exact property point on an interactive Leaflet/OpenStreetMap map. `POST /infrastructure/analyze` queries Overpass and returns raw current-infrastructure indicators for roads, schools, healthcare, bus stops, markets, banks, parks, and—when geometry permits—road intersections.
 
 Results are cached using coordinates rounded to four decimal places (approximately 11 m latitude and 10 m longitude in Nepal) plus a configuration version. This reduces repeated Overpass calls while avoiding broad neighbourhood-level rounding.
 
@@ -147,3 +147,107 @@ The examples are covered by `tests/test_infrastructure_index.py`, which also pro
 - Future scenario simulation: not implemented.
 
 The Infrastructure Health Index is **not** a future-price forecast, appreciation estimate, property valuation, or statistically trained model. It does not use the predicted house price. Its accuracy is limited by OpenStreetMap completeness, tagging quality, deduplication assumptions, straight-line distance methodology, and the policy choices expressed in the configurable rules.
+
+## Phase 3: Future Infrastructure Planning
+
+`POST /scenarios/simulate` supports a separate planning and exploratory-analysis interface. It copies the current infrastructure indicators, applies only the selected planned or proposed development to that temporary copy, and recalculates both states through the existing `InfrastructureIndexService`. It never writes to OpenStreetMap and does not alter the Phase 1 response.
+
+All supported actions, facility caps, total-quantity cap, road hierarchy, maximum distance reductions, index-change bands, percentage ranges, score caps, disclaimer, and configuration version are stored in [`config/scenario_rules.json`](config/scenario_rules.json). The file is loaded and validated for every request.
+
+```text
+Current OSM indicators + present ML price
+                    |
+                    v
+          Deep-copy current indicators
+                    |
+                    v
+ Apply configured hypothetical changes to copy
+                    |
+                    v
+ Reuse InfrastructureIndexService for both states
+                    |
+                    v
+ Current IHI vs scenario IHI + sequential rule contributions
+                    |
+                    v
+ Configured illustrative percentage and value range
+```
+
+### Scenario API example
+
+```http
+POST /scenarios/simulate
+Content-Type: application/json
+
+{
+  "baseline_price": 40000000,
+  "current_infrastructure": {
+    "nearest_road_distance_m": 60,
+    "nearest_major_road_distance_m": 850,
+    "major_road_type": "secondary",
+    "schools": 5,
+    "colleges": 1,
+    "kindergartens": 1,
+    "hospitals": 2,
+    "clinics": 2,
+    "bus_stops": 3,
+    "marketplaces": 1,
+    "supermarkets": 1,
+    "banks": 3,
+    "parks": 2
+  },
+  "changes": [
+    {"type": "major_road_distance", "new_distance_m": 180},
+    {"type": "road_upgrade", "new_road_type": "primary"}
+  ]
+}
+```
+
+An abbreviated response is:
+
+```json
+{
+  "baseline_price": {"amount": 40000000, "formatted": "NPR 4.00 Crore"},
+  "current": {"overall_index": 59, "classification": "Good", "category_scores": {}},
+  "scenario": {"overall_index": 65, "classification": "Good", "index_change": 6, "category_scores": {}, "category_score_differences": {}},
+  "value_shift": {
+    "classification": "Strong Positive Scenario",
+    "minimum_percent": 3,
+    "maximum_percent": 7,
+    "minimum_value": 41200000,
+    "maximum_value": 42800000,
+    "method": "rule_based_infrastructure_scenario",
+    "is_forecast": false,
+    "statistically_validated": false
+  },
+  "rule_contributions": [],
+  "metadata": {
+    "rules_version": "1.0.0",
+    "temporary_copy": true,
+    "disclaimer": "This result is a configurable, rule-based what-if analysis. It is not a statistically trained future-price forecast, investment guarantee, or professional valuation."
+  }
+}
+```
+
+The frontend appears after the current Infrastructure Health Index. A single opt-in checkbox opens a grouped development selector, followed by only the one additional choice needed for that project. Road-access plans use readable proximity bands such as **within 250 m**, **within 500 m**, **within 1 km**, and **within 2 km**; options that would worsen the current mapped distance are automatically hidden. The user then chooses **Evaluate Future Scenario**. This progressive-disclosure design also provides a live selection summary, current-versus-scenario comparison, impact explanation, rule contributions, reset/error/loading states, and a visibly separated illustrative value range.
+
+### System boundaries
+
+1. The ML model estimates a present property value from property inputs.
+2. OpenStreetMap analysis describes currently mapped nearby infrastructure.
+3. The Infrastructure Health Index summarizes that current infrastructure using configured rules.
+4. Future Infrastructure Planning evaluates a selected planned, proposed, or hypothetical development and maps the resulting IHI difference to a configured illustrative value range.
+
+No historical before-and-after infrastructure price-change dataset was used. The percentage bands are policy assumptions in JSON, not fitted coefficients. Consequently, the scenario value is not a guaranteed price increase, expected appreciation, future predicted value, investment recommendation, or professional valuation.
+
+The initial UI intentionally exposes improvement-only actions. An empty scenario demonstrates minimal change. Negative index-change bands are configured and tested for future degradation/removal actions, but the API currently rejects facility removal, farther-road changes, and road downgrades. Scenario history is not persisted in this phase.
+
+## Guided frontend experience
+
+The React interface uses a progressive three-step journey:
+
+1. **Investment location:** search a recognised area, let the map recenter, adjust the marker by clicking or dragging, and confirm the coordinates.
+2. **Property details:** enter size, building, accessibility, age, facing direction, and amenities in grouped cards. Encoded model fields remain internal.
+3. **Property analysis:** review present estimated value, nearby infrastructure highlights, Infrastructure Health Index, neutral location strengths and considerations, separate data-confidence indicators, advanced disclosures, and optional Future Infrastructure Planning.
+
+Raw OSM identifiers, mapped-facility lists, scoring-rule explanations, SHAP factors, and JSON export are collapsed by default. Completed current analyses are stored only in the browser under `propertyAnalyses` and can be compared on the **Compare Locations** page. This page compares two current analyses and deliberately excludes hypothetical scenarios. Browser-local comparison records are not written to the backend database.

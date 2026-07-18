@@ -15,8 +15,8 @@ test("requests and displays raw infrastructure indicators with loading state", a
   let resolveRequest; axios.post.mockReturnValue(new Promise((resolve) => { resolveRequest = resolve; }));
   render(<InfrastructureAnalysis locationLabel="Balkhu, Kathmandu" />);
   fireEvent.click(screen.getByText("Choose point"));
-  fireEvent.click(screen.getByRole("button", { name: "Analyze Infrastructure" }));
-  expect(screen.getByText("Analyzing current infrastructure...")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Review Nearby Infrastructure" }));
+  expect(screen.getByText("Reviewing nearby infrastructure...")).toBeInTheDocument();
   resolveRequest({ data: response });
   expect(await screen.findByText("Current nearby infrastructure")).toBeInTheDocument();
   expect(screen.getAllByText(/Ring Road/).length).toBeGreaterThan(0);
@@ -30,7 +30,7 @@ test("exports the transparent response as JSON", async () => {
   URL.createObjectURL = jest.fn(() => "blob:test"); URL.revokeObjectURL = jest.fn();
   jest.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
   axios.post.mockResolvedValue({ data: response }); render(<InfrastructureAnalysis locationLabel="Balkhu" />);
-  fireEvent.click(screen.getByText("Choose point")); fireEvent.click(screen.getByRole("button", { name: "Analyze Infrastructure" }));
+  fireEvent.click(screen.getByText("Choose point")); fireEvent.click(screen.getByRole("button", { name: "Review Nearby Infrastructure" }));
   await screen.findByText("Current nearby infrastructure"); fireEvent.click(screen.getByRole("button", { name: "Export JSON" }));
   expect(URL.createObjectURL).toHaveBeenCalled(); expect(HTMLAnchorElement.prototype.click).toHaveBeenCalled();
 });
@@ -39,6 +39,6 @@ test("shows infrastructure API errors", async () => {
   axios.post.mockRejectedValue({ response: { data: { detail: "OSM unavailable" } } });
   render(<InfrastructureAnalysis locationLabel="Balkhu, Kathmandu" />);
   fireEvent.click(screen.getByText("Choose point"));
-  fireEvent.click(screen.getByRole("button", { name: "Analyze Infrastructure" }));
+  fireEvent.click(screen.getByRole("button", { name: "Review Nearby Infrastructure" }));
   await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("OSM unavailable"));
 });

@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "disclaimer": "This result is a configurable, rule-based what-if analysis. It is not a statistically trained future-price forecast, investment guarantee, or professional valuation.",
+  "maximum_total_quantity": 20,
+  "scenario_types": {
+    "new_school": {"kind": "facility", "indicator": "schools", "category": "education", "label": "school", "maximum_quantity": 10},
+    "new_college": {"kind": "facility", "indicator": "colleges", "category": "education", "label": "college", "maximum_quantity": 5},
+    "new_kindergarten": {"kind": "facility", "indicator": "kindergartens", "category": "education", "label": "kindergarten", "maximum_quantity": 5},
+    "new_hospital": {"kind": "facility", "indicator": "hospitals", "category": "healthcare", "label": "hospital", "maximum_quantity": 3},
+    "new_clinic": {"kind": "facility", "indicator": "clinics", "category": "healthcare", "label": "clinic", "maximum_quantity": 5},
+    "new_bus_stop": {"kind": "facility", "indicator": "bus_stops", "category": "public_transport", "label": "bus stop", "maximum_quantity": 10},
+    "new_marketplace": {"kind": "facility", "indicator": "marketplaces", "category": "commerce", "label": "marketplace", "maximum_quantity": 5},
+    "new_supermarket": {"kind": "facility", "indicator": "supermarkets", "category": "commerce", "label": "supermarket", "maximum_quantity": 5},
+    "new_bank": {"kind": "facility", "indicator": "banks", "category": "commerce", "label": "bank", "maximum_quantity": 5},
+    "new_park": {"kind": "facility", "indicator": "parks", "category": "recreation", "label": "public park", "maximum_quantity": 5},
+    "major_road_distance": {"kind": "distance", "indicator": "nearest_major_road_distance_m", "categories": ["accessibility", "public_transport"], "label": "Major road distance", "minimum_distance_m": 0, "maximum_reduction_m": 5000},
+    "improved_road_access": {"kind": "distance", "indicator": "nearest_road_distance_m", "categories": ["accessibility"], "label": "Access-road distance", "minimum_distance_m": 0, "maximum_reduction_m": 2000},
+    "road_upgrade": {"kind": "road_upgrade", "indicator": "nearest_major_road_type", "categories": ["accessibility", "public_transport"], "label": "Road classification"}
+  },
+  "road_hierarchy": ["residential", "tertiary", "secondary", "primary", "trunk", "motorway"],
+  "index_change_rules": [
+    {"min_change": -100, "max_change": -6, "shift_percent_min": -8, "shift_percent_max": -3, "classification": "Strong Negative Scenario"},
+    {"min_change": -5, "max_change": -3, "shift_percent_min": -4, "shift_percent_max": -1, "classification": "Negative Scenario"},
+    {"min_change": -2, "max_change": 2, "shift_percent_min": 0, "shift_percent_max": 1, "classification": "Minimal Change"},
+    {"min_change": 3, "max_change": 5, "shift_percent_min": 1, "shift_percent_max": 3, "classification": "Moderate Positive Scenario"},
+    {"min_change": 6, "max_change": 10, "shift_percent_min": 3, "shift_percent_max": 7, "classification": "Strong Positive Scenario"},
+    {"min_change": 11, "max_change": 100, "shift_percent_min": 5, "shift_percent_max": 10, "classification": "Major Positive Scenario"}
+  ],
+  "value_shift_caps": {"minimum_percent": -8, "maximum_percent": 10},
+  "score_caps": {"minimum": 0, "maximum": 100}
+}

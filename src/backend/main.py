@@ -16,12 +16,14 @@ from database import SessionLocal, Prediction
 from model import predict_price, explain_prediction
 from infrastructure_routes import router as infrastructure_router
 from infrastructure_index.routes import router as infrastructure_index_router
+from scenario_routes import router as scenario_router
 
 
 
 app = FastAPI(title="House Price Prediction API")
 app.include_router(infrastructure_router)
 app.include_router(infrastructure_index_router)
+app.include_router(scenario_router)
 
 app.add_middleware(
     CORSMiddleware,

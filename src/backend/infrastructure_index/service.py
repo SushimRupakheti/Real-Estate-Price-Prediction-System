@@ -30,20 +30,34 @@ class InfrastructureIndexService:
         }
 
     def calculate(self, analysis: dict) -> dict:
-        rules = load_rules(self.rules_path)
         indicators = self.extract_indicators(analysis)
+        return self.calculate_from_indicators(
+            indicators,
+            selected_location=analysis["selected_location"],
+            source=analysis.get("metadata", {}).get("source", "OpenStreetMap contributors"),
+        )
+
+    def calculate_from_indicators(
+        self,
+        indicators: dict,
+        selected_location: dict | None = None,
+        source: str = "OpenStreetMap contributors",
+    ) -> dict:
+        rules = load_rules(self.rules_path)
         result = calculate_index(indicators, rules)
         return {
             **result,
-            "indicators_used": indicators,
-            "selected_location": analysis["selected_location"],
+            "indicators_used": dict(indicators),
+            "selected_location": selected_location or {
+                "location_name": None, "latitude": 0.0, "longitude": 0.0,
+            },
             "metadata": {
                 "name": rules.get("index_name", "Infrastructure Health Index"),
                 "method": "deterministic_json_rules",
                 "rules_version": rules["version"],
                 "rules_path": str(self.rules_path),
                 "calculated_at": datetime.now(timezone.utc).isoformat(),
-                "source": analysis.get("metadata", {}).get("source", "OpenStreetMap contributors"),
+                "source": source,
                 "limitations": [
                     "The index reflects mapped current infrastructure, not verified operating status.",
                     "OpenStreetMap coverage and tagging completeness vary by location.",

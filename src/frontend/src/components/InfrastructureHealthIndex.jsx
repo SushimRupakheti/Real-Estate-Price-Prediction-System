@@ -3,7 +3,7 @@ import axios from "axios";
 
 const INDEX_URL = "http://127.0.0.1:8000/infrastructure/index";
 
-export default function InfrastructureHealthIndex({ analysis }) {
+export default function InfrastructureHealthIndex({ analysis, onIndexCalculated }) {
   const [index, setIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -15,34 +15,35 @@ export default function InfrastructureHealthIndex({ analysis }) {
     setError("");
     setIndex(null);
     axios.post(INDEX_URL, { analysis }, { timeout: 15000 })
-      .then((response) => { if (active) setIndex(response.data); })
+      .then((response) => { if (active) { setIndex(response.data); onIndexCalculated?.(response.data); } })
       .catch((requestError) => {
         if (active) setError(requestError.response?.data?.detail || "Infrastructure Health Index is currently unavailable.");
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [analysis]);
+  }, [analysis, onIndexCalculated]);
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-blue-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">5</span>
           <div>
             <h3 className="text-sm font-semibold text-slate-900">Infrastructure Health Index</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-500">Transparent assessment of current OSM-mapped infrastructure.</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">Overall infrastructure quality from current OSM-mapped indicators.</p>
           </div>
         </div>
         {index && <div className="text-left sm:text-right">
-          <p className="text-3xl font-bold text-slate-950">{index.overall_score}<span className="text-sm font-medium text-slate-400">/100</span></p>
-          <p className="mt-1 text-xs font-semibold text-slate-600">{index.classification}</p>
+          <p className="text-3xl font-bold text-blue-800">{index.overall_score}<span className="text-sm font-medium text-slate-400">/100</span></p>
+          <p className="mt-1 inline-block rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">{index.classification}</p>
         </div>}
       </div>
 
       {loading && <div className="py-8 text-center text-sm text-slate-500">Calculating the rule-based index...</div>}
       {error && <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       {index && <>
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-blue-100"><div className="h-full rounded-full bg-blue-600" style={{ width: `${index.overall_score}%` }} /></div>
+        <details className="mt-5 rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer text-sm font-semibold text-slate-700">Infrastructure Health Index explanation</summary><div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {Object.values(index.categories).map((category) => (
             <details key={category.key} className="group rounded-xl border border-slate-200 bg-white p-4">
               <summary className="cursor-pointer list-none">
@@ -75,7 +76,7 @@ export default function InfrastructureHealthIndex({ analysis }) {
               </div>
             </details>
           ))}
-        </div>
+        </div></details>
         <p className="mt-4 text-xs leading-5 text-slate-500">
           Rule set {index.metadata.rules_version}. This index describes current mapped infrastructure; it is not a future-price forecast or property valuation.
         </p>
