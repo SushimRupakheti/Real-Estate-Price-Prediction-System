@@ -1,5 +1,13 @@
 {
+  "scripts": {
+    "frontend": "cd src/frontend && npm start",
+    "backend": "cd src/backend && python -m uvicorn main:app --reload",
+    "start": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
   "dependencies": {
     "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.4"
   }
 }
