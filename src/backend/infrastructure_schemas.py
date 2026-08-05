@@ -95,6 +95,8 @@ class InfrastructureMetadata(BaseModel):
     method: str
     analysis_timestamp: str
     cached: bool
+    stale: bool = False
+    cache_expired_at: str | None = None
     limitations: list[str]
 
 

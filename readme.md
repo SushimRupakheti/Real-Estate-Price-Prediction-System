@@ -7,20 +7,20 @@ The application estimates a **current house price** with a fitted sklearn pipeli
 The FastAPI runtime was verified as:
 
 ```text
-C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\python.exe
-Python 3.14.5 (64-bit, Windows)
+C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe
+Python 3.13 (64-bit, Windows)
 ```
 
 Install the pinned environment with:
 
 ```powershell
-& 'C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\python.exe' -m pip install -r requirements.txt
+& 'C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe' -m pip install -r requirements.txt
 ```
 
 Run the backend from the project root with:
 
 ```powershell
-& 'C:\Users\ASUS\AppData\Local\Python\pythoncore-3.14-64\python.exe' -m uvicorn src.backend.main:app --reload
+& 'C:\Users\ASUS\AppData\Local\Programs\Python\Python313\python.exe' -m uvicorn src.backend.main:app --reload
 ```
 
 ## Phase 1: current infrastructure context
@@ -251,3 +251,38 @@ The React interface uses a progressive three-step journey:
 3. **Property analysis:** review present estimated value, nearby infrastructure highlights, Infrastructure Health Index, neutral location strengths and considerations, separate data-confidence indicators, advanced disclosures, and optional Future Infrastructure Planning.
 
 Raw OSM identifiers, mapped-facility lists, scoring-rule explanations, SHAP factors, and JSON export are collapsed by default. Completed current analyses are stored only in the browser under `propertyAnalyses` and can be compared on the **Compare Locations** page. This page compares two current analyses and deliberately excludes hypothetical scenarios. Browser-local comparison records are not written to the backend database.
+
+## Macroeconomic adjustment layer
+
+The fitted property model is unchanged. After `/predict` calculates `base_price`, the backend optionally reads the latest `validated` row from `macro_indicators` and applies a separate, auditable Market Adjustment Index (MAI). A missing macro record never blocks the base price, SHAP, or infrastructure analysis. No valuation endpoint contacts NRB.
+
+Because this repository has no official historical real-estate calibration target, fewer than three comparable periods use `documented_rule_assumptions` from `config/macro_adjustment_rules.json`. The assumed neutral baselines, sensitivities, directions, and per-indicator caps are visible and editable; the total is capped at 3%. This method is explicitly not empirically calibrated. Once at least three comparable periods exist, the service switches to its robust historical median/MAD calculation. Housing and Utilities CPI is always labelled separately from residential house-price inflation.
+
+Endpoints:
+
+- `GET /api/macro/current` reads the newest validated database record.
+- `POST /api/macro/adjust` accepts `{"predicted_price": 25000000}`.
+- `POST /api/macro/scenario` applies percentage-point economic assumptions after the current layer. Infrastructure projects receive no premium until an evidence-based impact calibration exists.
+
+The standalone updater is the only component permitted to access official NRB sources:
+
+```powershell
+python -m src.backend.jobs.update_nrb_macro
+```
+
+It discovers a publication under the configured official archive, permits HTTPS NRB domains only, checks signatures and size, calculates SHA-256, rejects duplicate checksums, extracts XLSX first or PDF when selected, validates completeness/plausibility, inserts transactionally, and preserves the previous valid record on failure. Review the extracted measurement bases and reference period before production use because NRB workbook layouts and reporting bases can change. Configuration is documented in `.env.example`.
+
+Do not run the updater inside FastAPI. On Windows Task Scheduler, create a weekly task whose program is the environment's Python executable, arguments are `-m src.backend.jobs.update_nrb_macro`, and start-in directory is this repository. On cron, the equivalent is:
+
+```cron
+15 3 * * 1 cd /path/to/prediction_model && /path/to/venv/bin/python -m src.backend.jobs.update_nrb_macro
+```
+
+Install and test:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m pytest tests/test_macro_adjustment.py tests/test_macro_validation.py -q
+```
+
+The SQLite table and additive prediction-history columns are created automatically on backend startup. For a managed production database, translate the definitions in `src/backend/database.py` into the deployment's normal migration tool rather than relying on SQLite `ALTER TABLE` statements.

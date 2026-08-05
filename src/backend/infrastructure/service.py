@@ -6,7 +6,7 @@ from .config import (
     CACHE_DURATION_SECONDS, CACHE_PATH, CONFIGURATION_VERSION, COORDINATE_DECIMALS,
 )
 from .indicators import calculate_indicators
-from .osm_client import OverpassClient
+from .osm_client import OverpassClient, OSMServiceError
 
 
 class InfrastructureCache:
@@ -48,6 +48,19 @@ class InfrastructureCache:
             return None
         return json.loads(row[0])
 
+    def get_stale(self, latitude: float, longitude: float):
+        """Return the last successful response even after expiry for outage fallback."""
+        key = self.cache_key(latitude, longitude)
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT response_json, expires_at FROM infrastructure_cache WHERE cache_key = ?", (key,)
+            ).fetchone()
+        if not row:
+            return None
+        response = json.loads(row[0])
+        response["metadata"]["cache_expired_at"] = row[1]
+        return response
+
     def set(self, latitude: float, longitude: float, response: dict):
         now = datetime.now(timezone.utc)
         expires = now + timedelta(seconds=CACHE_DURATION_SECONDS)
@@ -76,7 +89,19 @@ class InfrastructureService:
             cached["metadata"]["cached"] = True
             return cached
 
-        elements = await self.client.fetch_elements(latitude, longitude)
+        try:
+            elements = await self.client.fetch_elements(latitude, longitude)
+        except OSMServiceError:
+            stale = self.cache.get_stale(latitude, longitude)
+            if stale is None:
+                raise
+            stale["selected_location"]["location_name"] = location_name
+            stale["metadata"]["cached"] = True
+            stale["metadata"]["stale"] = True
+            stale["metadata"]["limitations"].append(
+                "The live Overpass provider was unavailable, so this response uses the last successful cached analysis."
+            )
+            return stale
         indicators = calculate_indicators(elements, latitude, longitude)
         response = {
             "selected_location": {"location_name": location_name, "latitude": latitude, "longitude": longitude},
@@ -87,6 +112,7 @@ class InfrastructureService:
                 "method": "current_infrastructure_context",
                 "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
                 "cached": False,
+                "stale": False,
                 "limitations": [
                     "OpenStreetMap coverage and tag completeness vary by location.",
                     "Distances use mapped geometry and are approximate, not travel times.",

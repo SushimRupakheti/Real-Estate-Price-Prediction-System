@@ -1,4 +1,5 @@
 import InfrastructureAnalysis from "./InfrastructureAnalysis";
+import MacroConditionsCard from "./macro/MacroConditionsCard";
 
 const FRIENDLY_NAMES = {
   LOCATION_ENCODED: "Location",
@@ -137,6 +138,7 @@ export default function PredictionDashboard({ result, form, locationLabel, prope
       {result && <div className="col-span-12 lg:col-span-7">
           <KeyFactorsCard result={result} form={form} locationLabel={locationLabel} />
         </div>}
+      {result && <div className="col-span-12"><MacroConditionsCard result={result} /></div>}
       {result && <div className="col-span-12"><InfrastructureAnalysis
           locationLabel={locationLabel}
           baselinePrice={result.predicted_price}

@@ -17,6 +17,10 @@ from model import predict_price, explain_prediction
 from infrastructure_routes import router as infrastructure_router
 from infrastructure_index.routes import router as infrastructure_index_router
 from scenario_routes import router as scenario_router
+from macro.routes import router as macro_router
+from macro.repository import MacroIndicatorRepository
+from macro.service import MacroAdjustmentService
+from macro.exceptions import MacroDataUnavailableError
 
 
 
@@ -24,6 +28,7 @@ app = FastAPI(title="House Price Prediction API")
 app.include_router(infrastructure_router)
 app.include_router(infrastructure_index_router)
 app.include_router(scenario_router)
+app.include_router(macro_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -65,6 +70,12 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
     price      = predict_price(features)
     price_cr   = f"{round(price / 10000000, 2)} Cr"
     shap_vals  = explain_prediction(features)
+    macro_adjustment = None
+    try:
+        macro_adjustment = MacroAdjustmentService(MacroIndicatorRepository(db)).calculate(price)
+    except MacroDataUnavailableError:
+        # Macro data is optional and must never block the original ML estimate.
+        pass
 
     # Save to DB
     record = Prediction(
@@ -76,6 +87,12 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
         location_encoded=data.location_encoded, location_label=data.location_label,
         facing_encoded=data.facing_encoded,
         predicted_price=price,
+        base_predicted_price=price,
+        macro_adjusted_price=macro_adjustment["adjusted_price"] if macro_adjustment else None,
+        macro_adjustment_percentage=macro_adjustment["adjustment_percentage"] if macro_adjustment else None,
+        macro_indicator_record_id=macro_adjustment["macro_indicator_record_id"] if macro_adjustment else None,
+        macro_reference_date=macro_adjustment["reference_date"] if macro_adjustment else None,
+        macro_calibration_version=macro_adjustment["calibration_version"] if macro_adjustment else None,
     )
     db.add(record)
     db.commit()
@@ -83,7 +100,10 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
     return {
         "predicted_price"     : price,
         "predicted_price_cr"  : price_cr,
-        "shap_values"         : shap_vals
+        "shap_values"         : shap_vals,
+        "base_price"          : price,
+        "macro_adjustment"    : macro_adjustment,
+        "macro_data_available": macro_adjustment is not None,
     }
 
 

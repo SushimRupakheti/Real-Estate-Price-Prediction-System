@@ -59,6 +59,25 @@ async def test_successful_response_and_cached_response(tmp_path):
     assert stub.calls == 1
 
 
+@pytest.mark.asyncio
+async def test_expired_cache_is_used_when_overpass_is_unavailable(tmp_path):
+    class StubClient:
+        fail = False
+        async def fetch_elements(self, latitude, longitude):
+            if self.fail: raise OSMServiceError("OpenStreetMap infrastructure service is temporarily unavailable.")
+            return sample_elements()
+    stub = StubClient(); cache = InfrastructureCache(tmp_path / "cache.db")
+    service = InfrastructureService(stub, cache)
+    await service.analyze(27.7, 85.3, "Test")
+    with cache._connect() as connection:
+        connection.execute("UPDATE infrastructure_cache SET expires_at = ?", ("2000-01-01T00:00:00+00:00",))
+    stub.fail = True
+    result = await service.analyze(27.7, 85.3, "Test")
+    assert result["metadata"]["cached"] is True
+    assert result["metadata"]["stale"] is True
+    assert result["amenities"]["schools_within_1km"] == 1
+
+
 def test_coordinate_rounding(tmp_path):
     cache = InfrastructureCache(tmp_path / "cache.db")
     assert cache.cache_key(27.70001, 85.30001) == cache.cache_key(27.70004, 85.30004)

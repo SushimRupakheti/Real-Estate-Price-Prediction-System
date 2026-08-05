@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Any
 
 class HouseInput(BaseModel):
     floor: float
@@ -24,3 +24,6 @@ class PredictionOutput(BaseModel):
     predicted_price: float
     predicted_price_cr: str
     shap_values: List[ShapFeature]
+    base_price: float
+    macro_adjustment: dict[str, Any] | None = None
+    macro_data_available: bool = False

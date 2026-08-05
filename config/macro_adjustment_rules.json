@@ -1,0 +1,20 @@
+{
+  "version": "macro_assumptions_v1",
+  "method": "documented_rule_assumptions",
+  "empirically_calibrated": false,
+  "maximum_total_adjustment_percent": 3.0,
+  "description": "Transparent fallback assumptions used only when fewer than three comparable historical NRB periods are available.",
+  "indicators": {
+    "cpi": {"neutral_baseline": 4.0, "percentage_points_per_unit": 0.12, "maximum_contribution": 0.35, "direction": 1, "moderate_upper_bound": 7.0},
+    "housing": {"neutral_baseline": 4.0, "percentage_points_per_unit": 0.08, "maximum_contribution": 0.25, "direction": 1},
+    "lending": {"neutral_baseline": 9.0, "percentage_points_per_unit": 0.25, "maximum_contribution": 0.75, "direction": -1},
+    "deposit": {"neutral_baseline": 5.0, "percentage_points_per_unit": 0.10, "maximum_contribution": 0.30, "direction": -1},
+    "credit": {"neutral_baseline": 8.0, "percentage_points_per_unit": 0.10, "maximum_contribution": 0.60, "direction": 1},
+    "remittance": {"neutral_baseline": 15.0, "percentage_points_per_unit": 0.03, "maximum_contribution": 0.75, "direction": 1}
+  },
+  "limitations": [
+    "The baselines and sensitivities are documented analytical assumptions, not coefficients estimated from Nepal house-price history.",
+    "Indicator effects describe national market conditions and may not apply equally to an individual property.",
+    "Housing and Utilities CPI is excluded when unavailable."
+  ]
+}

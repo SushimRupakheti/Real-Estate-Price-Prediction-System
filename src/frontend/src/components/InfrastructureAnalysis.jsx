@@ -135,6 +135,7 @@ export default function InfrastructureAnalysis({
     </section>
     {!point && <p className="text-xs text-amber-700">Waiting for the map location. You can also click the map and confirm the property point.</p>}
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4"><p className="text-sm font-semibold text-red-700">{error}</p><p className="mt-1 text-xs leading-5 text-red-600">Your property-value estimate is still available. The OpenStreetMap provider may be busy; use Review Nearby Infrastructure to try again.</p></div>}
+    {result?.metadata?.stale && <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4"><p className="text-sm font-semibold text-amber-800">Showing the last successful nearby-infrastructure analysis</p><p className="mt-1 text-xs leading-5 text-amber-700">The live OpenStreetMap provider is temporarily unavailable. Cached mapped data is shown and may not include the newest map edits.</p></div>}
     {result && <NearbyHighlights result={result} />}
     {result && <InfrastructureHealthIndex analysis={result} onIndexCalculated={handleIndexCalculated} />}
     {result && <AssessmentSummary result={result} />}
