@@ -22,6 +22,22 @@ except Exception:
 FACING_BY_CODE = {0: "south-east", 1: "south-west", 2: "east", 3: "north",
                   4: "north-east", 5: "north-west", 6: "south", 7: "west"}
 
+def aggregate_transformed_shap(feature_names, values) -> list:
+    """Group one-hot SHAP columns back into their original input features."""
+    grouped = {}
+    for name, value in zip(feature_names, values):
+        if name.startswith("LOCATION_"):
+            original_name = "LOCATION"
+        elif name.startswith("FACING_"):
+            original_name = "FACING"
+        else:
+            original_name = name
+        grouped[original_name] = grouped.get(original_name, 0.0) + float(value)
+    explanation = [{"feature": name, "shap_value": round(value, 2)}
+                   for name, value in grouped.items()]
+    explanation.sort(key=lambda item: abs(item["shap_value"]), reverse=True)
+    return explanation
+
 def make_frame(features: list) -> pd.DataFrame:
     (floor, bedroom, bathroom, land_area, road_access, property_age,
      has_parking, has_balcony, has_garden, has_modular_kitchen,
@@ -45,10 +61,7 @@ def explain_prediction(features: list) -> list:
     transformed = preprocessing.transform(make_frame(features))
     values = np.asarray(explainer.shap_values(transformed))
     if values.ndim > 1: values = values[0]
-    explanation = [{"feature": name, "shap_value": round(float(value), 2)}
-                   for name, value in zip(FEATURE_NAMES, values)]
-    explanation.sort(key=lambda item: abs(item["shap_value"]), reverse=True)
-    return explanation
+    return aggregate_transformed_shap(FEATURE_NAMES, values)
 
 def global_feature_importance(raw_features: pd.DataFrame) -> list:
     """Return mean absolute SHAP impact for the fitted pipeline features."""
@@ -57,8 +70,11 @@ def global_feature_importance(raw_features: pd.DataFrame) -> list:
     if values.ndim == 3:
         values = values[..., 0]
     mean_abs = np.abs(values).mean(axis=0)
+    grouped = {}
+    for name, value in zip(FEATURE_NAMES, mean_abs):
+        original_name = "LOCATION" if name.startswith("LOCATION_") else "FACING" if name.startswith("FACING_") else name
+        grouped[original_name] = grouped.get(original_name, 0.0) + float(value)
     return sorted(
-        ({"feature": name, "importance": round(float(value), 2)}
-         for name, value in zip(FEATURE_NAMES, mean_abs)),
+        ({"feature": name, "importance": round(value, 2)} for name, value in grouped.items()),
         key=lambda item: item["importance"], reverse=True,
     )

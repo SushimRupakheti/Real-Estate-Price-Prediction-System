@@ -6,6 +6,8 @@ import {
 } from "recharts";
 
 const FRIENDLY_NAMES = {
+  "LOCATION": "Location",
+  "FACING": "Facing Direction",
   "LOCATION_ENCODED": "Location",
   "LAND AREA (sqft)": "Land Area",
   "BATHROOM": "Bathrooms",

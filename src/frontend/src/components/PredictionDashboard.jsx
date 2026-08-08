@@ -2,6 +2,8 @@ import InfrastructureAnalysis from "./InfrastructureAnalysis";
 import MacroConditionsCard from "./macro/MacroConditionsCard";
 
 const FRIENDLY_NAMES = {
+  LOCATION: "Location",
+  FACING: "Facing Direction",
   LOCATION_ENCODED: "Location",
   "LAND AREA (sqft)": "Land Area",
   BATHROOM: "Bathrooms",
@@ -98,8 +100,9 @@ function KeyFactorsCard({ result, form, locationLabel }) {
   const rows = shapRows?.length
     ? shapRows.map((item) => ({
         feature: item.feature,
-        label: FRIENDLY_NAMES[item.feature] || item.feature,
+        label: item.feature === "LOCATION" ? `Location (${locationLabel || "selected"})` : FRIENDLY_NAMES[item.feature] || item.feature,
         pct: Math.max(8, Math.round((Math.abs(item.shap_value) / maxVal) * 100)),
+        direction: item.shap_value >= 0 ? "Raised estimate" : "Lowered estimate",
       }))
     : fallback;
 
@@ -109,12 +112,12 @@ function KeyFactorsCard({ result, form, locationLabel }) {
         <div><h3 className="text-sm font-semibold text-slate-900">
         Why this estimate?
       </h3>
-      <p className="mt-1 text-xs text-slate-500">Strongest model factors for this property</p></div>
+      <p className="mt-1 text-xs text-slate-500">Relative SHAP impact for this prediction; location categories are combined.</p></div>
       <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-[10px] font-semibold text-indigo-700">MODEL EXPLANATION · SHAP</span></div>
       <div className="space-y-3">
         {rows.map((row) => (
           <div key={row.feature} className="grid grid-cols-[minmax(0,1fr)_96px_34px] items-center gap-2 text-xs">
-            <span className="text-slate-700 truncate">{row.label}</span>
+            <span className="min-w-0"><span className="block truncate text-slate-700">{row.label}</span>{row.direction && <span className={`mt-0.5 block text-[10px] ${row.direction === "Raised estimate" ? "text-emerald-600" : "text-amber-600"}`}>{row.direction}</span>}</span>
             <div className="h-1.5 rounded-full bg-slate-100">
               <div
                 className="h-1.5 rounded-full bg-indigo-600"
