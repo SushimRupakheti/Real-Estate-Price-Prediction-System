@@ -84,25 +84,25 @@ export default function LocationMap({ locationLabel, compact = false, onCoordina
 
   const confirm = () => { setConfirmed(true); onCoordinateConfirm?.(point); };
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div className="flex items-start gap-3 px-5 py-4 border-b border-slate-100">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex items-start gap-3 border-b border-slate-100 px-5 py-4">
         {stepNumber != null && <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">{stepNumber}</span>}
         <div>
           <h3 className="text-sm font-semibold text-slate-800">Select the exact property location</h3>
           <p className="text-[11px] text-slate-500 mt-1">{geocoding ? "Locating the entered area..." : "Click the map to move the marker, then confirm the coordinates."}</p>
         </div>
       </div>
-      <MapContainer center={[point.lat, point.lon]} zoom={initial.zoom || 14} className={`w-full ${compact ? "h-[220px]" : "h-72"}`}>
+      <MapContainer center={[point.lat, point.lon]} zoom={initial.zoom || 14} className={`w-full ${compact ? "h-[220px]" : "min-h-[320px] flex-1"}`}>
         <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <MapInteraction point={point} onSelect={(next) => { setPoint(next); setConfirmed(false); onCoordinateChange?.(next); }} />
         <FacilityMarkers facilities={facilities} selectedFacility={selectedFacility} onFacilitySelect={onFacilitySelect} />
         <FacilityFocus facility={selectedFacility} />
       </MapContainer>
-      <div className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="flex flex-col justify-between gap-3 border-t border-slate-800 p-4 sm:flex-row sm:items-center">
         <p className="text-xs text-gray-600" data-testid="selected-coordinates">
           Lat {point.lat.toFixed(6)}, Lon {point.lon.toFixed(6)}
         </p>
-        <button type="button" onClick={confirm} className="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-slate-800 transition-colors">
+        <button type="button" onClick={confirm} className="rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-700">
           {confirmed ? "Point confirmed" : "Confirm property point"}
         </button>
       </div>

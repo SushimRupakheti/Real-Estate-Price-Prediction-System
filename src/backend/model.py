@@ -63,6 +63,24 @@ def explain_prediction(features: list) -> list:
     if values.ndim > 1: values = values[0]
     return aggregate_transformed_shap(FEATURE_NAMES, values)
 
+def explain_prediction_details(features: list) -> dict:
+    """Return an additive, auditable local explanation in model output units."""
+    frame = make_frame(features)
+    transformed = preprocessing.transform(frame)
+    values = np.asarray(explainer.shap_values(transformed))
+    if values.ndim > 1:
+        values = values[0]
+
+    base_value = float(np.asarray(explainer.expected_value).reshape(-1)[0])
+    prediction = float(model.predict(frame)[0])
+    reconstructed = base_value + float(values.sum())
+    return {
+        "shap_values": aggregate_transformed_shap(FEATURE_NAMES, values),
+        "shap_base_value": round(base_value, 2),
+        "shap_reconstructed_value": round(reconstructed, 2),
+        "shap_additivity_error": round(prediction - reconstructed, 2),
+    }
+
 def global_feature_importance(raw_features: pd.DataFrame) -> list:
     """Return mean absolute SHAP impact for the fitted pipeline features."""
     transformed = preprocessing.transform(raw_features)

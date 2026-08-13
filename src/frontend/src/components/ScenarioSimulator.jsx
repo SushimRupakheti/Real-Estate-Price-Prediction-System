@@ -82,18 +82,19 @@ export default function ScenarioSimulator({ baselinePrice, currentIndex }) {
   const positiveImpacts = result ? Object.entries(result.scenario.category_score_differences).filter(([, difference]) => difference > 0) : [];
   const minimumValueDifference = result ? result.value_shift.minimum_value - baselinePrice : 0;
   const maximumValueDifference = result ? result.value_shift.maximum_value - baselinePrice : 0;
+  const hasValueIncrease = maximumValueDifference > 0;
 
-  return <section className="overflow-hidden rounded-2xl border border-violet-200 bg-white shadow-md shadow-violet-900/5 ring-1 ring-violet-50">
-    <div className="flex flex-col gap-3 border-b border-violet-100 bg-gradient-to-r from-violet-50 via-white to-white p-5 sm:flex-row sm:items-start sm:justify-between">
+  return <section className="overflow-hidden rounded-2xl border border-slate-700 bg-white shadow-sm">
+    <div className="flex flex-col gap-3 border-b border-slate-800 bg-slate-50 p-5 sm:flex-row sm:items-start sm:justify-between">
       <div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-sm font-bold text-white shadow-sm">F</span><div><div className="flex flex-wrap items-center gap-2"><h3 className="text-base font-semibold text-slate-900">Future Infrastructure Planning</h3><span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-700">OPTIONAL</span></div><p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">Evaluate one announced, proposed, or hypothetical development at a time without changing current infrastructure data.</p></div></div>
       <div className="text-left sm:text-right"><p className="text-xs text-slate-400">Current property assessment</p><p className="text-sm font-semibold text-slate-800">{formatPrice(baselinePrice)}</p><p className="mt-1 text-xs text-slate-500">Current IHI: {currentIndex.overall_score}/100</p></div>
     </div>
 
-    <div className="p-5"><aside className="rounded-xl border border-violet-100 bg-violet-50/50 p-4"><h4 className="text-sm font-semibold text-violet-900">About this scenario</h4><p className="mt-1 text-xs leading-5 text-slate-600">Use this only when exploring a planned or proposed government or private-sector project. The analysis does not predict whether the project will be approved, funded, or completed.</p></aside>
+    <div className="p-5"><aside className="rounded-xl border border-violet-900/60 bg-violet-950/20 p-4"><h4 className="text-sm font-semibold text-violet-300">About this scenario</h4><p className="mt-1 text-xs leading-5 text-slate-500">Use this only when exploring a planned or proposed government or private-sector project. The analysis does not predict whether the project will be approved, funded, or completed.</p></aside>
 
-    <label className="mt-5 flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-slate-200 p-4"><span><span className="block text-sm font-semibold text-slate-800">Evaluate a planned or proposed project</span><span className="mt-1 block text-xs leading-5 text-slate-500">Enable this only when you want to explore a specific future development.</span></span><input aria-label="Enable future scenario" type="checkbox" checked={planningEnabled} onChange={(event) => { setPlanningEnabled(event.target.checked); if (!event.target.checked) selectProject(""); }} className="mt-1 h-5 w-5 shrink-0 accent-slate-900" /></label>
+    <label className="mt-5 flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-slate-700 bg-slate-50 p-4 transition hover:border-violet-700"><span><span className="block text-sm font-semibold text-slate-800">Evaluate a planned or proposed project</span><span className="mt-1 block text-xs leading-5 text-slate-500">Enable this only when you want to explore a specific future development.</span></span><input aria-label="Enable future scenario" type="checkbox" checked={planningEnabled} onChange={(event) => { setPlanningEnabled(event.target.checked); if (!event.target.checked) selectProject(""); }} className="mt-1 h-5 w-5 shrink-0 accent-violet-600" /></label>
 
-    {planningEnabled && <div className="mt-4 rounded-xl border border-slate-200 p-4">
+    {planningEnabled && <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950/30 p-4">
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-xs font-medium text-slate-600">Planned development<select aria-label="Planned development" value={projectType} onChange={(event) => selectProject(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700"><option value="">Select a proposed project</option>{PROJECT_GROUPS.map(([group, projects]) => <optgroup key={group} label={group}>{projects.map(([type, label]) => <option key={type} value={type}>{label}</option>)}</optgroup>)}</select></label>
 
@@ -105,12 +106,12 @@ export default function ScenarioSimulator({ baselinePrice, currentIndex }) {
       </div>
 
       <div className="mt-4 rounded-lg bg-slate-50 p-3"><p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Selected future development</p><p className="mt-1 text-xs font-medium text-slate-700">{selectedSummary()}</p></div>
-      <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={evaluate} disabled={loading || !selectionReady} className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{loading ? "Evaluating future scenario..." : "Evaluate Future Scenario"}</button><button type="button" onClick={reset} className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600">Reset scenario</button></div>
+      <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={evaluate} disabled={loading || !selectionReady} className="rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-50">{loading ? "Evaluating future scenario..." : "Evaluate Future Scenario"}</button><button type="button" onClick={reset} className="rounded-lg border border-slate-700 bg-slate-900 px-5 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-slate-800">Reset scenario</button></div>
     </div>}
     {error && <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
     {result && <div className="mt-6 space-y-4 border-t border-violet-100 pt-5">
-      <div className="overflow-hidden rounded-2xl border border-violet-300 bg-gradient-to-r from-indigo-700 via-violet-700 to-purple-600 p-5 text-white shadow-lg shadow-violet-900/20 ring-4 ring-violet-100">
+      <div className={`overflow-hidden rounded-2xl border p-5 text-white shadow-lg ${hasValueIncrease ? "scenario-increase border-emerald-700 bg-emerald-950/40 shadow-emerald-950/20 ring-1 ring-emerald-800/60" : "border-violet-700 bg-violet-950/50 shadow-violet-950/20 ring-1 ring-violet-800/60"}`}>
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-100">Illustrative scenario value impact</p><p className="mt-2 text-sm text-blue-100">Current estimated value</p><p className="mt-1 text-2xl font-bold">{result.baseline_price?.formatted || formatPrice(baselinePrice)}</p></div>
           <div className="hidden text-3xl text-blue-200 lg:block">→</div>

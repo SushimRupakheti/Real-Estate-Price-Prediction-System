@@ -24,6 +24,9 @@ class PredictionOutput(BaseModel):
     predicted_price: float
     predicted_price_cr: str
     shap_values: List[ShapFeature]
+    shap_base_value: float
+    shap_reconstructed_value: float
+    shap_additivity_error: float
     base_price: float
     macro_adjustment: dict[str, Any] | None = None
     macro_data_available: bool = False

@@ -24,7 +24,7 @@ export default function InfrastructureHealthIndex({ analysis, onIndexCalculated 
   }, [analysis, onIndexCalculated]);
 
   return (
-    <section className="rounded-2xl border border-emerald-200 border-l-4 border-l-emerald-600 bg-gradient-to-br from-white to-emerald-50/40 p-5 shadow-md shadow-emerald-900/5">
+    <section className="rounded-2xl border border-emerald-200 border-l-4 border-l-emerald-500 bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-4 border-b border-blue-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
           <div>

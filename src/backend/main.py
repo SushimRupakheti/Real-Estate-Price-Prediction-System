@@ -13,7 +13,7 @@ if str(backend_dir) not in sys.path:
 
 from schemas import HouseInput, PredictionOutput
 from database import SessionLocal, Prediction
-from model import predict_price, explain_prediction
+from model import predict_price, explain_prediction_details
 from infrastructure_routes import router as infrastructure_router
 from infrastructure_index.routes import router as infrastructure_index_router
 from scenario_routes import router as scenario_router
@@ -69,7 +69,7 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
 
     price      = predict_price(features)
     price_cr   = f"{round(price / 10000000, 2)} Cr"
-    shap_vals  = explain_prediction(features)
+    shap_details = explain_prediction_details(features)
     macro_adjustment = None
     try:
         macro_adjustment = MacroAdjustmentService(MacroIndicatorRepository(db)).calculate(price)
@@ -100,7 +100,7 @@ def predict(data: HouseInput, db: Session = Depends(get_db)):
     return {
         "predicted_price"     : price,
         "predicted_price_cr"  : price_cr,
-        "shap_values"         : shap_vals,
+        **shap_details,
         "base_price"          : price,
         "macro_adjustment"    : macro_adjustment,
         "macro_data_available": macro_adjustment is not None,

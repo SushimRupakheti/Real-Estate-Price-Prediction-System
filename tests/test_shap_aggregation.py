@@ -1,4 +1,6 @@
-from model import aggregate_transformed_shap
+import pytest
+
+from model import aggregate_transformed_shap, explain_prediction_details
 
 
 def test_one_hot_location_and_facing_contributions_are_grouped():
@@ -19,3 +21,17 @@ def test_grouping_preserves_total_shap_contribution():
         ["LAND AREA (sqft)", "LOCATION_A", "LOCATION_B", "FACING_east"], values,
     )
     assert sum(item["shap_value"] for item in result) == sum(values)
+
+
+def test_local_explanation_reconstructs_prediction():
+    features = [
+        2, 3, 2, 1500, 12, 10, 1, 1, 0, 1,
+        0, 2, 500, 5, 0, "Bafal, Kathmandu",
+    ]
+    details = explain_prediction_details(features)
+    contribution_total = sum(item["shap_value"] for item in details["shap_values"])
+
+    assert details["shap_reconstructed_value"] == pytest.approx(
+        details["shap_base_value"] + contribution_total, abs=0.2
+    )
+    assert details["shap_additivity_error"] == pytest.approx(0, abs=1.0)
