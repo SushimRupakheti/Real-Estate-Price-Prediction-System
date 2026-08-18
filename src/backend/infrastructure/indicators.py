@@ -5,7 +5,6 @@ import unicodedata
 
 from .config import (
     MAJOR_ROAD_TYPES, PLACE_NAME_DEDUP_DISTANCE_M, RADII_METERS,
-    UNNAMED_CROSS_TYPE_DEDUP_DISTANCE_M,
 )
 
 EARTH_RADIUS_M = 6_371_000
@@ -64,6 +63,22 @@ def _normalize_name(name):
     return re.sub(r"[^\w]+", " ", value).strip() or None
 
 
+def _name_signatures(tags):
+    """Return comparable names, including common acronym forms such as BN Academy."""
+    values = {tags.get(key) for key in ("name", "name:en", "name:ne", "alt_name", "official_name", "short_name") if tags.get(key)}
+    signatures = {_normalize_name(value) for value in values}
+    generic_suffixes = {"academy", "school", "college", "hospital", "clinic", "park", "bank", "market", "supermarket"}
+    for value in tuple(signatures):
+        words = value.split()
+        if len(words) >= 3 and words[-1] in generic_suffixes:
+            signatures.add(f"{''.join(word[0] for word in words[:-1])} {words[-1]}")
+    return signatures - {None}
+
+
+def _display_name(tags):
+    return tags.get("name:en") or tags.get("name") or tags.get("official_name") or tags.get("short_name") or tags.get("alt_name")
+
+
 def _references(tags):
     keys = ("wikidata", "brand:wikidata", "ref", "ref:operator", "operator:wikidata")
     return {(key, str(tags[key]).casefold().strip()) for key in keys if tags.get(key)}
@@ -96,12 +111,13 @@ def _candidates(elements, category, rules, radius_key, latitude, longitude):
         tags = element.get("tags") or {}
         matched = _matches_category(tags, category, rules)
         center = _center(element)
-        if not matched or center is None: continue
+        name = _display_name(tags)
+        if not matched or center is None or not name: continue
         distance = haversine_m(latitude, longitude, *center)
         if distance > RADII_METERS[radius_key]: continue
         candidates.append({
             "element_type": element.get("type"), "osm_id": element.get("id"),
-            "name": tags.get("name"), "normalized_name": _normalize_name(tags.get("name")),
+            "name": name, "name_signatures": _name_signatures(tags),
             "latitude": center[0], "longitude": center[1], "distance_m": distance,
             "matched_tags": {key: value for key, value in matched},
             "reason": f"Matched {', '.join(f'{k}={v}' for k,v in matched)} within {RADII_METERS[radius_key]} m",
@@ -118,14 +134,9 @@ def _same_place(candidate, representative):
     if (_point_in_polygon(candidate["latitude"], candidate["longitude"], representative["geometry"])
             or _point_in_polygon(representative["latitude"], representative["longitude"], candidate["geometry"])):
         return True
-    if candidate["normalized_name"] and candidate["normalized_name"] == representative["normalized_name"]:
+    if candidate["name_signatures"] & representative["name_signatures"]:
         return distance <= PLACE_NAME_DEDUP_DISTANCE_M
-    # Only merge unnamed objects at near-identical coordinates and across OSM
-    # representation types; nearby unnamed facilities remain independent.
-    return (not candidate["normalized_name"] and not representative["normalized_name"]
-            and candidate["element_type"] != representative["element_type"]
-            and candidate["matched_tags"] == representative["matched_tags"]
-            and distance <= UNNAMED_CROSS_TYPE_DEDUP_DISTANCE_M)
+    return False
 
 
 def _deduplicate(candidates):
@@ -139,7 +150,7 @@ def _deduplicate(candidates):
 
 def _public_place(candidate):
     return {
-        "name": candidate["name"] or "Unnamed facility",
+        "name": candidate["name"],
         "osm_id": candidate["osm_id"],
         "osm_type": candidate["element_type"],
         "latitude": round(candidate["latitude"], 7),
@@ -181,7 +192,7 @@ def calculate_indicators(elements, latitude, longitude, include_debug=False):
                                 "radius_m": RADII_METERS[radius_key], "places": places}
         if include_debug:
             debug[category] = [{k: (sorted(v) if k == "references" else round(v,1) if k == "distance_m" else v)
-                                for k,v in group[0].items() if k not in {"normalized_name", "category", "geometry"}}
+                                for k,v in group[0].items() if k not in {"name_signatures", "category", "geometry"}}
                                for group in groups[:5]]
 
     combined_schools = sum(categories[name]["deduplicated_count"] for name in ("schools", "colleges", "kindergartens"))

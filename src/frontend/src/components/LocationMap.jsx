@@ -37,7 +37,7 @@ function MapInteraction({ point, onSelect }) {
   const map = useMap();
   useEffect(() => { map.setView([point.lat, point.lon], map.getZoom()); }, [map, point]);
   useMapEvents({ click(event) { onSelect({ lat: event.latlng.lat, lon: event.latlng.lng }); } });
-  const icon = L.divIcon({ className: "", html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:#1e3a8a;border:3px solid white;box-shadow:0 2px 8px rgba(15,23,42,.35);transform:rotate(-45deg)"></div>', iconSize: [22, 22], iconAnchor: [11, 22] });
+  const icon = L.divIcon({ className: "", html: '<div style="width:24px;height:24px;border-radius:50% 50% 50% 0;background:#7c3aed;border:3px solid white;box-shadow:0 0 0 10px rgba(124,58,237,.15),0 8px 20px rgba(0,0,0,.45);transform:rotate(-45deg)"></div>', iconSize: [24, 24], iconAnchor: [12, 24] });
   return <Marker position={[point.lat, point.lon]} icon={icon} draggable eventHandlers={{ dragend(event) { const next = event.target.getLatLng(); onSelect({ lat: next.lat, lon: next.lng }); } }} />;
 }
 
@@ -84,11 +84,11 @@ export default function LocationMap({ locationLabel, compact = false, onCoordina
 
   const confirm = () => { setConfirmed(true); onCoordinateConfirm?.(point); };
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1424] shadow-2xl shadow-black/10">
       <div className="flex items-start gap-3 border-b border-slate-100 px-5 py-4">
         {stepNumber != null && <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">{stepNumber}</span>}
         <div>
-          <h3 className="text-sm font-semibold text-slate-800">Select the exact property location</h3>
+          <h3 className="text-sm font-semibold text-white">Select the exact property point</h3>
           <p className="text-[11px] text-slate-500 mt-1">{geocoding ? "Locating the entered area..." : "Click the map to move the marker, then confirm the coordinates."}</p>
         </div>
       </div>
@@ -98,11 +98,11 @@ export default function LocationMap({ locationLabel, compact = false, onCoordina
         <FacilityMarkers facilities={facilities} selectedFacility={selectedFacility} onFacilitySelect={onFacilitySelect} />
         <FacilityFocus facility={selectedFacility} />
       </MapContainer>
-      <div className="flex flex-col justify-between gap-3 border-t border-slate-800 p-4 sm:flex-row sm:items-center">
-        <p className="text-xs text-gray-600" data-testid="selected-coordinates">
-          Lat {point.lat.toFixed(6)}, Lon {point.lon.toFixed(6)}
-        </p>
-        <button type="button" onClick={confirm} className="rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-700">
+      <div className="flex flex-col justify-between gap-3 border-t border-white/[0.07] bg-[#0b1120] p-4 sm:flex-row sm:items-center">
+        <div><p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">Selected coordinates</p><p className="mt-1 font-mono text-xs text-slate-300" data-testid="selected-coordinates">
+          {point.lat.toFixed(6)}, {point.lon.toFixed(6)}
+        </p></div>
+        <button type="button" onClick={confirm} className="rounded-lg bg-violet-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-violet-950/40 transition-colors hover:bg-violet-500">
           {confirmed ? "Point confirmed" : "Confirm property point"}
         </button>
       </div>

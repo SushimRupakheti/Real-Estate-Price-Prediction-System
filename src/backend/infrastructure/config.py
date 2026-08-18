@@ -9,7 +9,7 @@ RETRY_COUNT = 2
 RETRY_BACKOFF_SECONDS = 0.5
 CACHE_DURATION_SECONDS = 24 * 60 * 60
 COORDINATE_DECIMALS = 4  # About 11 m latitude and 10 m longitude in Nepal.
-CONFIGURATION_VERSION = "phase1-v6-transparent-places"
+CONFIGURATION_VERSION = "phase1-v7-clean-place-names"
 CACHE_PATH = Path(__file__).resolve().parents[1] / "infrastructure_cache.db"
 
 RADII_METERS = {

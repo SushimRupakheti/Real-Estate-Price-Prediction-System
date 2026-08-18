@@ -14,6 +14,11 @@ test("labels grouped location SHAP with the selected property location", () => {
         { feature: "LOCATION", shap_value: 9000000 },
         { feature: "BATHROOM", shap_value: 5000000 },
       ],
+      location_effect: {
+        location: "Kalanki, Kathmandu", effect: "premium", difference: 1800000,
+        difference_percent: 6.2, percentile: 72, reference_price: 29000000,
+        sample_count: 12, confidence: "medium", locations_compared: 84,
+      },
     }}
     form={{}}
     locationLabel="Kalanki, Kathmandu"
@@ -25,4 +30,5 @@ test("labels grouped location SHAP with the selected property location", () => {
   expect(screen.getAllByText("Raised estimate")).toHaveLength(2);
   expect(screen.getByText("+Rs. 90.0 L")).toBeInTheDocument();
   expect(screen.getByText(/Baseline: Rs. 2,10,00,000/)).toBeInTheDocument();
+  expect(screen.queryByText("Location effect · same property comparison")).not.toBeInTheDocument();
 });

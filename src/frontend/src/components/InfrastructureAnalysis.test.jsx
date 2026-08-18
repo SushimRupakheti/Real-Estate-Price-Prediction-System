@@ -21,6 +21,7 @@ test("requests and displays raw infrastructure indicators with loading state", a
   expect(await screen.findByText("Current nearby infrastructure")).toBeInTheDocument();
   expect(screen.getAllByText(/Ring Road/).length).toBeGreaterThan(0);
   expect(screen.getByText("Schools (1)")).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: /Google Maps/i })).not.toBeInTheDocument();
   fireEvent.click(screen.getByText("School A"));
   expect(screen.getByTestId("highlighted-facility")).toHaveTextContent("School A");
   expect(axios.post).toHaveBeenCalledWith(expect.stringContaining("/infrastructure/analyze"), expect.objectContaining({ latitude: 27.7, longitude: 85.3 }));

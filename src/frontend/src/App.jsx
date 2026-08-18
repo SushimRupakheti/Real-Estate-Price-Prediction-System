@@ -57,15 +57,15 @@ export default function App() {
   const analysisStep = path === "/analyze/results" ? 3 : path === "/analyze/property-details" ? 2 : 1;
   const activeSection = path.startsWith("/analyze/") ? "/analyze/location" : path;
 
-  return <div className="dark-theme flex min-h-screen flex-col bg-slate-950 text-slate-100">
-    <header className="sticky top-0 z-[2000] border-b border-slate-800 bg-slate-950/95 shadow-lg shadow-black/20 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-6 py-3.5 lg:flex-row lg:items-center lg:justify-between">
+  return <div className="light-theme flex min-h-screen flex-col bg-[#f7f8fc] text-slate-900">
+    <header className="sticky top-0 z-[2000] border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <a href="/analyze/location" onClick={(event) => { event.preventDefault(); navigate("/analyze/location"); }} className="flex items-center gap-3 text-left">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-700 text-base font-bold text-white shadow-sm">NP</span>
-          <span><span className="block text-sm font-bold tracking-tight text-slate-950">Nepal Property Insight</span><span className="block text-[11px] text-slate-500">Property value and location analysis</span></span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-blue-600 text-sm font-black text-white shadow-lg shadow-violet-950/40">NP</span>
+          <span><span className="block text-sm font-bold tracking-tight text-slate-900">Nepal Property Insight</span><span className="block text-[11px] text-slate-500">Data-led property intelligence</span></span>
         </a>
-        <nav aria-label="Primary navigation" className="flex gap-1 overflow-x-auto rounded-xl border border-slate-800 bg-slate-900 p-1">
-          {NAV_ITEMS.map(([itemPath, label]) => <a key={itemPath} href={itemPath} onClick={(event) => { event.preventDefault(); navigate(itemPath); }} aria-current={activeSection === itemPath ? "page" : undefined} className={`whitespace-nowrap rounded-lg px-3.5 py-2 text-xs font-semibold transition ${activeSection === itemPath ? "bg-white text-blue-700 shadow-sm" : "text-slate-600 hover:bg-white/60 hover:text-slate-900"}`}>{label}</a>)}
+        <nav aria-label="Primary navigation" className="flex gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 p-1">
+          {NAV_ITEMS.map(([itemPath, label]) => <a key={itemPath} href={itemPath} onClick={(event) => { event.preventDefault(); navigate(itemPath); }} aria-current={activeSection === itemPath ? "page" : undefined} className={`whitespace-nowrap rounded-lg px-3.5 py-2 text-xs font-semibold transition ${activeSection === itemPath ? "bg-white text-violet-700 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:bg-white hover:text-slate-800"}`}>{label}</a>)}
         </nav>
       </div>
     </header>
@@ -78,6 +78,6 @@ export default function App() {
       {path === "/methodology" && <div className="mx-auto max-w-6xl px-4 py-8"><ModelCard /></div>}
     </div>
 
-    <footer className="mt-10 border-t border-slate-800 bg-slate-900/70"><div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-5 text-xs leading-5 text-slate-500 sm:flex-row sm:items-center sm:justify-between"><p>Model estimates and OpenStreetMap-derived context for research and exploratory analysis.</p><p>Not investment advice or a professional property valuation.</p></div></footer>
+    <footer className="mt-10 border-t border-slate-200 bg-white/70"><div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-5 text-xs leading-5 text-slate-500 sm:flex-row sm:items-center sm:justify-between"><p>Model estimates and OpenStreetMap-derived context for research and exploratory analysis.</p><p>Not investment advice or a professional property valuation.</p></div></footer>
   </div>;
 }

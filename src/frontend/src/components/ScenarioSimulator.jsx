@@ -106,11 +106,11 @@ export default function ScenarioSimulator({ baselinePrice, currentIndex }) {
       </div>
 
       <div className="mt-4 rounded-lg bg-slate-50 p-3"><p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Selected future development</p><p className="mt-1 text-xs font-medium text-slate-700">{selectedSummary()}</p></div>
-      <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={evaluate} disabled={loading || !selectionReady} className="rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-50">{loading ? "Evaluating future scenario..." : "Evaluate Future Scenario"}</button><button type="button" onClick={reset} className="rounded-lg border border-slate-700 bg-slate-900 px-5 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-slate-800">Reset scenario</button></div>
+      <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={evaluate} disabled={loading || !selectionReady} className="rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-50">{loading ? "Evaluating future scenario..." : "Evaluate Future Scenario"}</button><button type="button" onClick={reset} className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900">Reset scenario</button></div>
     </div>}
     {error && <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
-    {result && <div className="mt-6 space-y-4 border-t border-violet-100 pt-5">
+    {result && <div className="scenario-results mt-6 space-y-4 border-t border-violet-100 pt-5">
       <div className={`overflow-hidden rounded-2xl border p-5 text-white shadow-lg ${hasValueIncrease ? "scenario-increase border-emerald-700 bg-emerald-950/40 shadow-emerald-950/20 ring-1 ring-emerald-800/60" : "border-violet-700 bg-violet-950/50 shadow-violet-950/20 ring-1 ring-violet-800/60"}`}>
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-100">Illustrative scenario value impact</p><p className="mt-2 text-sm text-blue-100">Current estimated value</p><p className="mt-1 text-2xl font-bold">{result.baseline_price?.formatted || formatPrice(baselinePrice)}</p></div>

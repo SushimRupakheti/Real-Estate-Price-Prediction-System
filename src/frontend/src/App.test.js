@@ -6,7 +6,7 @@ jest.mock("./components/LocationMap", () => () => <div>Map</div>);
 test("renders the existing prediction application", () => {
   window.history.replaceState({}, "", "/analyze/location");
   render(<App />);
-  expect(document.querySelector(".dark-theme")).toBeInTheDocument();
+  expect(document.querySelector(".light-theme")).toBeInTheDocument();
   expect(screen.getByText("Nepal Property Insight")).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Analyse Property" })).toHaveAttribute("href", "/analyze/location");
   expect(screen.getByRole("link", { name: "Compare Locations" })).toHaveAttribute("href", "/compare");

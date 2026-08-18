@@ -13,6 +13,10 @@ model = joblib.load(MODEL_PATH)
 preprocessing = model.named_steps["preprocessing"]
 estimator = model.named_steps["estimator"]
 FEATURE_NAMES = preprocessing.get_feature_names_out().tolist()
+TRAINING_FRAME = pd.read_csv(ROOT / "data" / "processed" / "X_train.csv")
+TRAINING_LOCATIONS = TRAINING_FRAME["LOCATION"].dropna().astype(str)
+LOCATION_COUNTS = TRAINING_LOCATIONS.value_counts().to_dict()
+MODELED_LOCATIONS = sorted(LOCATION_COUNTS)
 try:
     explainer = shap.TreeExplainer(estimator)
 except Exception:
@@ -79,6 +83,33 @@ def explain_prediction_details(features: list) -> dict:
         "shap_base_value": round(base_value, 2),
         "shap_reconstructed_value": round(reconstructed, 2),
         "shap_additivity_error": round(prediction - reconstructed, 2),
+    }
+
+def explain_location_effect(features: list) -> dict:
+    """Compare the same property across every location learned by the model."""
+    frame = make_frame(features)
+    selected_location = str(frame.iloc[0]["LOCATION"])
+    comparison = pd.concat([frame] * len(MODELED_LOCATIONS), ignore_index=True)
+    comparison["LOCATION"] = MODELED_LOCATIONS
+    predictions = np.asarray(model.predict(comparison), dtype=float)
+    selected_prediction = float(model.predict(frame)[0])
+    median_prediction = float(np.median(predictions))
+    difference = selected_prediction - median_prediction
+    percentile = float((predictions <= selected_prediction).mean() * 100)
+    sample_count = int(LOCATION_COUNTS.get(selected_location, 0))
+    confidence = "high" if sample_count >= 20 else "medium" if sample_count >= 8 else "low"
+    difference_percent = 0.0 if median_prediction == 0 else difference / median_prediction * 100
+    effect = "premium" if difference_percent >= 1 else "discount" if difference_percent <= -1 else "neutral"
+    return {
+        "location": selected_location,
+        "effect": effect,
+        "difference": round(difference, 2),
+        "difference_percent": round(difference_percent, 2),
+        "percentile": round(percentile, 1),
+        "reference_price": round(median_prediction, 2),
+        "sample_count": sample_count,
+        "confidence": confidence,
+        "locations_compared": len(MODELED_LOCATIONS),
     }
 
 def global_feature_importance(raw_features: pd.DataFrame) -> list:

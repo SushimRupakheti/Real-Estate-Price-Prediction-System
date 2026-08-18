@@ -13,6 +13,15 @@ const CATEGORY_DEFS = [
 ];
 const distance = (value) => value == null ? "Unavailable" : value > 0 && value < 1 ? "<1 m" : `${Math.round(value).toLocaleString()} m`;
 
+function FacilityItem({ place, categoryKey, categoryLabel, onSelect }) {
+  return <div className="rounded-lg border border-transparent p-1 transition hover:border-slate-200 hover:bg-slate-50">
+    <button type="button" onClick={() => onSelect({ ...place, category: categoryKey, category_label: categoryLabel })} className="w-full rounded px-2 py-1.5 text-left">
+      <span className="block truncate text-sm font-medium text-slate-200">{place.name}</span>
+      <span className="text-xs text-slate-500">{distance(place.distance_m)} · OSM {place.osm_type} {place.osm_id}</span>
+    </button>
+  </div>;
+}
+
 function RoadDetails({ title, road }) {
   return <div className="rounded-lg border border-gray-100 p-3"><p className="text-xs text-gray-500">{title}</p>{road ? <><p className="font-semibold text-gray-800 mt-1">{road.name}</p><p className="text-sm text-gray-600">{distance(road.distance_m)} · {road.highway_classification}</p><p className="text-xs text-gray-400">OSM {road.osm_type} {road.osm_id}</p></> : <p className="text-sm mt-1">Unavailable</p>}</div>;
 }
@@ -143,7 +152,7 @@ export default function InfrastructureAnalysis({
     {result && <details className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><summary className="cursor-pointer text-sm font-semibold text-slate-700">Nearby mapped facilities and technical details</summary><div className="mt-4">
       <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-semibold text-gray-800">Current nearby infrastructure</h3><div className="flex gap-2"><button type="button" onClick={() => setShowAll((value) => !value)} className="text-xs border rounded-lg px-3 py-2">{showAll ? "Show nearest markers" : "Show all markers"}</button><button type="button" onClick={exportJson} className="text-xs bg-slate-700 text-white rounded-lg px-3 py-2">Export JSON</button></div></div>
       <div className="mt-3 grid sm:grid-cols-2 gap-2"><RoadDetails title="Nearest road" road={result.roads.nearest_road} /><RoadDetails title="Nearest major road" road={result.roads.nearest_major_road} /></div>
-      <div className="mt-4 grid sm:grid-cols-2 gap-3">{CATEGORY_DEFS.map(([key, label]) => { const category = result.categories[key]; return <details key={key} className="border rounded-lg p-3"><summary className="cursor-pointer font-medium text-sm">{label} ({category.deduplicated_count})</summary><p className="text-xs text-gray-400 mt-1">{category.raw_count} raw OSM elements · {category.radius_m.toLocaleString()} m radius</p><div className="mt-2 space-y-1 max-h-64 overflow-y-auto">{category.places.length ? category.places.map((place) => <button type="button" key={`${place.osm_type}-${place.osm_id}`} onClick={() => selectFacility({ ...place, category: key, category_label: label })} className="w-full text-left rounded p-2 hover:bg-blue-50"><span className="block text-sm font-medium">{place.name}</span><span className="text-xs text-gray-500">{distance(place.distance_m)} · OSM {place.osm_type} {place.osm_id}</span></button>) : <p className="text-xs text-gray-500">No mapped places found.</p>}</div></details>; })}</div>
+      <div className="mt-4 grid sm:grid-cols-2 gap-3">{CATEGORY_DEFS.map(([key, label]) => { const category = result.categories[key]; return <details key={key} className="border rounded-lg p-3"><summary className="cursor-pointer font-medium text-sm">{label} ({category.deduplicated_count})</summary><p className="text-xs text-gray-400 mt-1">{category.raw_count} raw OSM elements · {category.radius_m.toLocaleString()} m radius</p><div className="mt-2 space-y-1 max-h-64 overflow-y-auto">{category.places.length ? category.places.map((place) => <FacilityItem key={`${place.osm_type}-${place.osm_id}`} place={place} categoryKey={key} categoryLabel={label} onSelect={selectFacility} />) : <p className="text-xs text-gray-500">No mapped places found.</p>}</div></details>; })}</div>
       <p className="text-xs text-gray-500 mt-4">Mapped places are deduplicated OpenStreetMap features, not verified operating facilities. Source: OpenStreetMap contributors.</p>
     </div></details>}
     {result && indexResult && baselinePrice && <ScenarioSimulator baselinePrice={baselinePrice} currentIndex={indexResult} />}

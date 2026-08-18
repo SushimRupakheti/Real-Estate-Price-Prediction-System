@@ -26,12 +26,12 @@ def sample_elements():
          "geometry": [{"lat": 27.7080, "lon": 85.3000}, {"lat": 27.7080, "lon": 85.3100}]},
         {"type": "way", "id": 12, "nodes": [2, 4], "tags": {"highway": "residential"},
          "geometry": [{"lat": 27.7080, "lon": 85.3000}, {"lat": 27.7080, "lon": 85.2900}]},
-        node(20, 27.7005, 85.3000, amenity="school"),
-        node(21, 27.7010, 85.3000, amenity="hospital"),
-        node(22, 27.7005, 85.3000, highway="bus_stop"),
-        node(23, 27.7005, 85.3000, shop="supermarket"),
-        node(24, 27.7005, 85.3000, amenity="bank"),
-        node(25, 27.7010, 85.3000, leisure="park"),
+        node(20, 27.7005, 85.3000, amenity="school", name="Test School"),
+        node(21, 27.7010, 85.3000, amenity="hospital", name="Test Hospital"),
+        node(22, 27.7005, 85.3000, highway="bus_stop", name="Test Bus Stop"),
+        node(23, 27.7005, 85.3000, shop="supermarket", name="Test Supermarket"),
+        node(24, 27.7005, 85.3000, amenity="bank", name="Test Bank"),
+        node(25, 27.7010, 85.3000, leisure="park", name="Test Park"),
     ]
 
 
@@ -144,7 +144,7 @@ def test_narrow_tags_deduplication_and_radius_rules():
     assert result["categories"]["marketplaces"]["deduplicated_count"] == 0
 
 
-def test_unnamed_places_do_not_merge_unless_cross_type_and_near_identical():
+def test_unnamed_places_are_excluded_from_facility_counts():
     elements = [
         node(200, 27.7001, 85.3000, amenity="bank"),
         node(201, 27.70011, 85.3000, amenity="bank"),
@@ -153,21 +153,33 @@ def test_unnamed_places_do_not_merge_unless_cross_type_and_near_identical():
         node(204, 27.7060, 85.3000, amenity="bank", name="Nepal Bank"),
     ]
     result = calculate_indicators(elements, 27.7, 85.3)
-    assert result["categories"]["banks"]["raw_count"] == 5
-    assert result["categories"]["banks"]["deduplicated_count"] == 4
+    assert result["categories"]["banks"]["raw_count"] == 2
+    assert result["categories"]["banks"]["deduplicated_count"] == 2
 
 
-def test_place_lists_are_sorted_complete_and_handle_unnamed_facilities():
+def test_place_lists_are_sorted_and_exclude_unnamed_facilities():
     elements = [
         node(401, 27.7005, 85.3, amenity="school", name="Farther School"),
         node(402, 27.7001, 85.3, amenity="school"),
     ]
     places = calculate_indicators(elements, 27.7, 85.3)["categories"]["schools"]["places"]
-    assert len(places) == 2
-    assert places[0]["name"] == "Unnamed facility"
+    assert len(places) == 1
+    assert places[0]["name"] == "Farther School"
     assert [place["distance_m"] for place in places] == sorted(place["distance_m"] for place in places)
-    assert places[0]["osm_id"] == 402 and places[0]["osm_type"] == "node"
+    assert places[0]["osm_id"] == 401 and places[0]["osm_type"] == "node"
     assert places[0]["tags"] == {"amenity": "school"}
+
+
+def test_name_aliases_acronyms_and_localized_names_are_deduplicated():
+    elements = [
+        node(601, 27.7001, 85.3, amenity="school", name="Basundhara National Academy"),
+        node(602, 27.7002, 85.3, amenity="school", name="BN Academy"),
+        node(603, 27.7003, 85.3, amenity="school", name="बसुन्धरा नेशनल एकेडेमी", **{"name:en": "Basundhara National Academy"}),
+    ]
+    schools = calculate_indicators(elements, 27.7, 85.3)["categories"]["schools"]
+    assert schools["raw_count"] == 3
+    assert schools["deduplicated_count"] == 1
+    assert schools["places"][0]["name"] == "Basundhara National Academy"
 
 
 def test_named_road_details_are_returned():

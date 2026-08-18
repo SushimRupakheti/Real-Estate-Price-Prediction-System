@@ -1,6 +1,6 @@
 import pytest
 
-from model import aggregate_transformed_shap, explain_prediction_details
+from model import aggregate_transformed_shap, explain_location_effect, explain_prediction_details
 
 
 def test_one_hot_location_and_facing_contributions_are_grouped():
@@ -35,3 +35,17 @@ def test_local_explanation_reconstructs_prediction():
         details["shap_base_value"] + contribution_total, abs=0.2
     )
     assert details["shap_additivity_error"] == pytest.approx(0, abs=1.0)
+
+
+def test_location_effect_compares_the_same_property_across_locations():
+    features = [
+        2, 3, 2, 1500, 12, 10, 1, 1, 0, 1,
+        0, 2, 500, 5, 0, "Bhaisepati, Lalitpur",
+    ]
+    effect = explain_location_effect(features)
+    assert effect["location"] == "Bhaisepati, Lalitpur"
+    assert effect["locations_compared"] > 1
+    assert 0 <= effect["percentile"] <= 100
+    assert effect["sample_count"] > 0
+    assert effect["confidence"] in {"low", "medium", "high"}
+    assert effect["effect"] in {"premium", "discount", "neutral"}

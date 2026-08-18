@@ -29,6 +29,13 @@ function formatCrore(value) {
   return ((value || 0) / 10000000).toFixed(2);
 }
 
+function ordinal(value) {
+  const number = Math.round(value || 0);
+  const remainder = number % 100;
+  if (remainder >= 11 && remainder <= 13) return `${number}th`;
+  return `${number}${number % 10 === 1 ? "st" : number % 10 === 2 ? "nd" : number % 10 === 3 ? "rd" : "th"}`;
+}
+
 function formatContribution(value) {
   const absolute = Math.abs(value || 0);
   const sign = value >= 0 ? "+" : "−";
@@ -154,12 +161,35 @@ function KeyFactorsCard({ result, form, locationLabel }) {
   );
 }
 
+function LocationEffectCard({ result, locationLabel }) {
+  const effect = result?.location_effect;
+  if (!effect || !result?.show_location_effect) return null;
+  const positive = effect.effect === "premium";
+  const neutral = effect.effect === "neutral";
+  const tone = neutral ? "text-slate-300" : positive ? "text-emerald-300" : "text-amber-300";
+  const sign = effect.difference > 0 ? "+" : effect.difference < 0 ? "−" : "";
+  const absoluteDifference = Math.abs(effect.difference || 0);
+  return <section className="h-full rounded-2xl border border-violet-200 bg-white p-6 shadow-sm">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-600">Location effect · same property comparison</p><h2 className="mt-2 text-base font-semibold text-slate-900">{locationLabel || effect.location}</h2><p className="mt-1 max-w-xl text-xs leading-5 text-slate-500">The model predicted this identical property across {effect.locations_compared} learned locations and compared this location with the median.</p></div>
+      <span className={`w-fit rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${effect.confidence === "high" ? "bg-emerald-500/10 text-emerald-300" : effect.confidence === "medium" ? "bg-cyan-500/10 text-cyan-300" : "bg-amber-500/10 text-amber-300"}`}>{effect.confidence} confidence · {effect.sample_count} records</span>
+    </div>
+    <div className="mt-5 grid gap-3 sm:grid-cols-3">
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="text-[10px] uppercase tracking-wider text-slate-500">Modeled location effect</p><p className={`mt-2 text-xl font-bold ${tone}`}>{sign}Rs. {formatPrice(absoluteDifference)}</p><p className={`mt-1 text-xs font-medium ${tone}`}>{effect.difference_percent > 0 ? "+" : ""}{effect.difference_percent}% vs median location</p></div>
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="text-[10px] uppercase tracking-wider text-slate-500">Location standing</p><p className="mt-2 text-xl font-bold text-violet-700">{neutral ? "Median range" : ordinal(effect.percentile)}</p><p className="mt-1 text-xs text-slate-500">For this exact property profile</p></div>
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4"><p className="text-[10px] uppercase tracking-wider text-slate-500">Interpretation</p><p className={`mt-2 text-sm font-semibold capitalize ${tone}`}>{effect.effect === "premium" ? "Location premium" : effect.effect === "discount" ? "Location discount" : "Near the median"}</p><p className="mt-1 text-xs leading-5 text-slate-500">Separate from the additive SHAP baseline.</p></div>
+    </div>
+    {effect.confidence === "low" && <p className="mt-4 text-[11px] leading-5 text-amber-300/80">Treat this result cautiously: the model has limited training examples for this location.</p>}
+  </section>;
+}
+
 export default function PredictionDashboard({ result, form, locationLabel, propertyPoint }) {
   return (
     <div className="grid grid-cols-12 gap-3">
       <div className="col-span-12 lg:col-span-5">
         <EstimatedPriceCard result={result} locationLabel={locationLabel} />
       </div>
+      {result?.show_location_effect && <div className="col-span-12 lg:col-span-7"><LocationEffectCard result={result} locationLabel={locationLabel} /></div>}
       {result && <div className="col-span-12 lg:col-span-7">
           <KeyFactorsCard result={result} form={form} locationLabel={locationLabel} />
         </div>}

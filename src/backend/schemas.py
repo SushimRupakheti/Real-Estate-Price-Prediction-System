@@ -27,6 +27,7 @@ class PredictionOutput(BaseModel):
     shap_base_value: float
     shap_reconstructed_value: float
     shap_additivity_error: float
+    location_effect: dict[str, Any]
     base_price: float
     macro_adjustment: dict[str, Any] | None = None
     macro_data_available: bool = False
